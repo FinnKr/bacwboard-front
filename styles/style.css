@@ -1,0 +1,26 @@
+html {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+#dashboard_create {
+    display: flex;
+    width: 140px;
+    height: 90px;
+    text-align: center;
+    align-items: center;
+    background-color: rgba(9, 30, 66, .04);
+    cursor: pointer;
+}
+
+#dashboard_create:hover {
+    background-color: rgba(9, 30, 66, .08);
+}
+
+#create_board_submit {
+    display: flex;
+    width: 100px;
+    text-align: center;
+    align-items: center;
+    background-color: rgba(9, 30, 66, .04);
+    cursor: not-allowed;
+}
