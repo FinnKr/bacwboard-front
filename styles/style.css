@@ -10,17 +10,48 @@ html {
     align-items: center;
     background-color: rgba(9, 30, 66, .04);
     cursor: pointer;
+    border-radius: 8px;
 }
 
 #dashboard_create:hover {
     background-color: rgba(9, 30, 66, .08);
 }
 
-#create_board_submit {
+.create_board_submit_active {
     display: flex;
-    width: 100px;
+    width: 110px;
+    height: 70px;
+    text-align: center;
+    align-items: center;
+    background-color: #5aac44;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.create_board_submit_active:hover {
+    background-color: #61bd4f;
+}
+
+.create_board_submit {
+    display: flex;
+    width: 110px;
+    height: 70px;
     text-align: center;
     align-items: center;
     background-color: rgba(9, 30, 66, .04);
+    color: #a5adba;
     cursor: not-allowed;
+    border-radius: 8px;
+}
+
+.boards {
+    display: inline-block;
+    margin: 20px;
+    width: 140px;
+    height: 90px;
+    background-color: lightskyblue;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 80px;
 }
