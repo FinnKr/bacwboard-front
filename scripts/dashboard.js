@@ -1,6 +1,8 @@
 getBoards();
 
 function getBoards(){
+    var content = document.getElementById("dashboard_boards");
+    content.innerHTML = '<div class="loader"></div>'
     var reqUrl = url + "/board";
     var req = new XMLHttpRequest();
     req.overrideMimeType("application/json");
@@ -8,9 +10,9 @@ function getBoards(){
     req.setRequestHeader("Authorization", getCookieByName("token"))
     req.onreadystatechange = function() {
         if (this.readyState == 4){
-            if (this.status == 200) {
+            if (this.status == 200) {                
                 var jsonResponse = JSON.parse(req.responseText);
-                document.getElementById("dashboard_boards").innerHTML = parseBoardsToHtml(jsonResponse);
+                content.innerHTML = parseBoardsToHtml(jsonResponse);
             } else if (this.status == 401) {
                 window.location = UNAUTHORIZED_URL;
             }
@@ -73,31 +75,24 @@ function createBoardRequest() {
 function parseBoardsToHtml(res) {
     var boards_html = "";
     if (res.length >= 1){
-        var categories = [];
-        var onlyCats = [];
+        var catTitles = [];
         var i = 0;
-        var j = 0;
         res.forEach(board => {
-            if (!(onlyCats.includes(board.category))){
-                categories.push([board.category, `<div id="board_${board.id}" class="boards">${board.title}</div>`]);
-                onlyCats.push(board.category);
-                i++;
+            if (!(catTitles.some(e => e.category === board.category))){
+                catTitles.push(new cat_titles(board.category, `<div id="board_${board.id}" class="boards">${board.title}</div>`));
             } else {
-                categories.forEach(pair => {
-                    if (pair[0] == board.category) {
-                        console.log(pair[0] + " | " + board.category);
-                        
-                        console.log(j);
-                        
-                        categories[j][1] += `</span><div id="board_${board.id}" class="boards">${board.title}</div>`;
+                catTitles.forEach(pair => {
+                    if (pair.category == board.category) {                        
+                        catTitles[i].titles += `</span><div id="board_${board.id}" class="boards">${board.title}</div>`;
                     }
-                    j++;
+                    i++;
                 });
+                i = 0;
             }
         });
         i = 0;
-        categories.forEach(pair => {
-            boards_html += `<div class="board_category"><h2>${pair[0]}</h2>${pair[1]}</div>`;
+        catTitles.forEach(pair => {
+            boards_html += `<div class="board_category"><h2>${pair.category}</h2><div class="board_titles_content">${pair.titles}</div></div>`;
             i++;
         });
     } else {
@@ -105,4 +100,9 @@ function parseBoardsToHtml(res) {
     }
     return boards_html;
 
+}
+
+function cat_titles (category, firstTitle){
+    this.category = category;
+    this.titles = firstTitle;
 }

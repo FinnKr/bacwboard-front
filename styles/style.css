@@ -10,7 +10,7 @@ html {
     align-items: center;
     background-color: rgba(9, 30, 66, .04);
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 4px;
 }
 
 #dashboard_create:hover {
@@ -45,13 +45,41 @@ html {
     border-radius: 8px;
 }
 
+.board_titles_content {
+    display:flex;
+}
+
 .boards {
-    display: inline-block;
+    display: flex;
     margin: 20px;
+    margin-top: 0px;
     width: 140px;
     height: 90px;
-    background-color: lightskyblue;
+    background-color: #40a35b;
+    color: #fff;
     text-align: center;
-    vertical-align: middle;
-    line-height: 80px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.boards:hover {
+    background-color: #388f50;
+}
+
+.loader {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #40a35b;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
