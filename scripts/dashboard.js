@@ -21,13 +21,23 @@ function getBoards(){
     req.send();
 }
 
-function createBoard(){
+function createBoard(el){
     showModal("create_board_modal");
+    var currentCategory = "Eigene Boards";
+    var wrapperElemCL = el.parentElement.parentElement.classList;
+    if(wrapperElemCL.contains("catset")){
+        for (var i = 0, l=wrapperElemCL.length; i<l; ++i) {
+            var curClass = wrapperElemCL[i]
+            if (/cat_.*/.test(curClass)) {
+                var currentCategory = curClass.substring(4);
+            }
+        }
+    }
     var title = document.getElementById("create_board_title");
     var category = document.getElementById("create_board_category");
     var btnSbm = document.getElementById("create_board_submit");
     title.value = "";
-    category.value = "Eigene Boards"
+    category.value = currentCategory;
     document.querySelectorAll(".create_board_input").forEach(elem => {
         elem.addEventListener("keyup", function(){
             if (!title.value || !category.value) {
@@ -62,6 +72,8 @@ function createBoardRequest() {
                     window.location = DASHBOARD_URL;
                 } else if (this.status == 401) {                
                     window.location = UNAUTHORIZED_URL;
+                } else if (this.status == 422) {
+
                 }
             }
         }
@@ -92,11 +104,11 @@ function parseBoardsToHtml(res) {
         });
         i = 0;
         catTitles.forEach(pair => {
-            boards_html += `<div class="board_category"><h2>${pair.category}</h2><div class="board_titles_content">${pair.titles}</div></div>`;
+            boards_html += `<div class="board_category"><h2>${pair.category}</h2><div class="board_titles_content catset cat_${pair.category.replace(" ", "_")}">${pair.titles}${CREATE_BOARD_BTN}</div></div>`;
             i++;
         });
     } else {
-        boards_html = "<h2>Bisher wurden noch keine Boards erstellt</h2>";
+        boards_html = "<h2>Bisher wurden noch keine Boards erstellt</h2>" + CREATE_BOARD_BTN;
     }
     return boards_html;
 
