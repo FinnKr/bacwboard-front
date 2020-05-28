@@ -2,7 +2,7 @@ getBoards();
 
 function getBoards(){
     var content = document.getElementById("dashboard_boards");
-    content.innerHTML = '<div class="loader"></div>'
+    content.innerHTML = '<div class="loader"></div>';
     var reqUrl = url + "/board";
     var req = new XMLHttpRequest();
     req.overrideMimeType("application/json");
@@ -15,6 +15,9 @@ function getBoards(){
                 content.innerHTML = parseBoardsToHtml(jsonResponse);
             } else if (this.status == 401) {
                 window.location = UNAUTHORIZED_URL;
+            } else {
+                console.log(this.status);
+                console.log(this.responseText);                
             }
         }
     }
@@ -24,12 +27,13 @@ function getBoards(){
 function createBoard(el){
     showModal("create_board_modal");
     var currentCategory = "Eigene Boards";
-    var wrapperElemCL = el.parentElement.parentElement.classList;
-    if(wrapperElemCL.contains("catset")){
-        for (var i = 0, l=wrapperElemCL.length; i<l; ++i) {
-            var curClass = wrapperElemCL[i]
-            if (/cat_.*/.test(curClass)) {
-                var currentCategory = curClass.substring(4);
+    var elCL = el.classList;
+    for (var i = 0, l=elCL.length; i<l; ++i) {
+        var curClass = elCL[i];
+        if (/catid_.*/.test(curClass)) {
+            var curCatId = curClass.substring(6);
+            if (curCatId != "-1"){
+                currentCategory = document.getElementsByClassName("catidc_" + curCatId)[0].firstChild.innerHTML;
             }
         }
     }
@@ -73,7 +77,10 @@ function createBoardRequest() {
                 } else if (this.status == 401) {                
                     window.location = UNAUTHORIZED_URL;
                 } else if (this.status == 422) {
-
+                    // Existiert bereits
+                } else {
+                    console.log(this.status + "\n" + this.responseText);
+                    
                 }
             }
         }
@@ -90,31 +97,45 @@ function parseBoardsToHtml(res) {
         var catTitles = [];
         var i = 0;
         res.forEach(board => {
-            if (!(catTitles.some(e => e.category === board.category))){
-                catTitles.push(new cat_titles(board.category, `<div id="board_${board.id}" class="boards">${board.title}</div>`));
+            var catName = board.category.name;
+            var boardHtml = makeBoardHtml(board.id, board.title);
+            if (!(catTitles.some(e => e.category === catName))){
+                catTitles.push(new cat_titles(catName, boardHtml, board.category_id));
             } else {
                 catTitles.forEach(pair => {
-                    if (pair.category == board.category) {                        
-                        catTitles[i].titles += `</span><div id="board_${board.id}" class="boards">${board.title}</div>`;
+                    if (pair.category == catName) {                        
+                        catTitles[i].titles += boardHtml;
                     }
                     i++;
                 });
                 i = 0;
             }
         });
-        i = 0;
-        catTitles.forEach(pair => {
-            boards_html += `<div class="board_category"><h2>${pair.category}</h2><div class="board_titles_content catset cat_${pair.category.replace(" ", "_")}">${pair.titles}${CREATE_BOARD_BTN}</div></div>`;
-            i++;
-        });
+        boards_html = makeBoardsHtml(catTitles);
     } else {
-        boards_html = "<h2>Bisher wurden noch keine Boards erstellt</h2>" + CREATE_BOARD_BTN;
-    }
+        boards_html = "<h2>Bisher wurden noch keine Boards erstellt</h2>" + makeCreateBoardHtml(-1);
+    }    
     return boards_html;
-
 }
 
-function cat_titles (category, firstTitle){
+function cat_titles (category, firstTitle, category_id){
     this.category = category;
     this.titles = firstTitle;
+    this.category_id = category_id;
+}
+
+function makeBoardHtml(id, title) {
+    return `<div id="board_${id}" class="boards">${title}</div>`;
+}
+
+function makeBoardsHtml(catTitles){
+    var boards_html = "";
+    catTitles.forEach(pair => {
+        boards_html += `<div class="board_category catidc_${pair.category_id}"><h2>${pair.category}</h2><div class="board_titles_content">${pair.titles}${makeCreateBoardHtml(pair.category_id)}</div></div>`;
+    });
+    return boards_html;
+}
+
+function makeCreateBoardHtml(category_id){
+    return `<div id="dashboard_create"><p id="dashboard_create_button" class="catid_${category_id}" onclick="createBoard(this)">Neues Board erstellen</p></div>`;
 }
