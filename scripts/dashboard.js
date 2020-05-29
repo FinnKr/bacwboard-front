@@ -1,38 +1,68 @@
 getBoards();
 
-function getBoards(){
+function getBoards() {
+    getOwnBoards();
+    getSharedBoards();
+}
+
+function getOwnBoards(){
     var content = document.getElementById("dashboard_boards");
-    content.innerHTML = '<div class="loader"></div>';
+    content.innerHTML = LOADER_HTML;
     var reqUrl = url + "/board";
     var req = new XMLHttpRequest();
     req.overrideMimeType("application/json");
-    req.open("GET", reqUrl, true);    
-    req.setRequestHeader("Authorization", getCookieByName("token"))
-    req.onreadystatechange = function() {
-        if (this.readyState == 4){
-            if (this.status == 200) {                
+    req.open("GET", reqUrl, true);
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function () {
+        if (this.readyState == 4) {
+            if (this.status == 200) {
                 var jsonResponse = JSON.parse(req.responseText);
-                content.innerHTML = parseBoardsToHtml(jsonResponse);
+                content.innerHTML = parseBoardsToHtml(jsonResponse, "own");
             } else if (this.status == 401) {
                 window.location = UNAUTHORIZED_URL;
             } else {
                 console.log(this.status);
-                console.log(this.responseText);                
+                console.log(this.responseText);
             }
         }
     }
     req.send();
 }
 
-function createBoard(el){
+function getSharedBoards(){
+    var content = document.getElementById("dashboard_shared_boards");
+    content.innerHTML = '<p><i>Freigegebene Boards werden geladen</i></p>' + LOADER_HTML;
+    var reqUrl = url + "/share";
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("GET", reqUrl, true);
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function () {
+        if (this.readyState == 4) {
+            if (this.status == 200) {
+                var jsonResponse = JSON.parse(req.responseText);
+                console.log(jsonResponse);
+                content.innerHTML = parseBoardsToHtml(jsonResponse, "shared");
+            } else if (this.status == 401) {
+                window.location = UNAUTHORIZED_URL;
+            } else {
+                console.log(this.status);
+                console.log(this.responseText);
+            }
+        }
+    }
+    req.send();
+}
+
+function createBoard(el) {
     showModal("create_board_modal");
     var currentCategory = "Eigene Boards";
     var elCL = el.classList;
-    for (var i = 0, l=elCL.length; i<l; ++i) {
+    for (var i = 0, l = elCL.length; i < l; ++i) {
         var curClass = elCL[i];
         if (/catid_.*/.test(curClass)) {
             var curCatId = curClass.substring(6);
-            if (curCatId != "-1"){
+            if (curCatId != "-1") {
                 currentCategory = document.getElementsByClassName("catidc_" + curCatId)[0].firstChild.innerHTML;
             }
         }
@@ -43,7 +73,7 @@ function createBoard(el){
     title.value = "";
     category.value = currentCategory;
     document.querySelectorAll(".create_board_input").forEach(elem => {
-        elem.addEventListener("keyup", function(){
+        elem.addEventListener("keyup", function () {
             if (!title.value || !category.value) {
                 btnSbm.classList.remove("create_board_submit_active");
                 btnSbm.classList.add("create_board_submit");
@@ -59,7 +89,7 @@ function createBoardRequest() {
     var btnSbm = document.getElementById("create_board_submit");
     var title = document.getElementById("create_board_title");
     var category = document.getElementById("create_board_category");
-    if (title.value && category.value){        
+    if (title.value && category.value) {
         const board = JSON.stringify({
             "title": document.getElementById("create_board_title").value,
             "category": document.getElementById("create_board_category").value
@@ -71,16 +101,16 @@ function createBoardRequest() {
         req.setRequestHeader("Content-type", "application/json");
         req.setRequestHeader("Authorization", getCookieByName("token"));
         req.onreadystatechange = function () {
-            if (this.readyState == 4){
+            if (this.readyState == 4) {
                 if (this.status == 201) {
                     window.location = DASHBOARD_URL;
-                } else if (this.status == 401) {                
+                } else if (this.status == 401) {
                     window.location = UNAUTHORIZED_URL;
                 } else if (this.status == 422) {
                     // Existiert bereits
                 } else {
                     console.log(this.status + "\n" + this.responseText);
-                    
+
                 }
             }
         }
@@ -91,19 +121,19 @@ function createBoardRequest() {
     }
 }
 
-function parseBoardsToHtml(res) {
+function parseBoardsToHtml(res, boards_type) {
     var boards_html = "";
-    if (res.length >= 1){
+    if (res.length >= 1) {
         var catTitles = [];
         var i = 0;
         res.forEach(board => {
             var catName = board.category.name;
             var boardHtml = makeBoardHtml(board.id, board.title);
-            if (!(catTitles.some(e => e.category === catName))){
+            if (!(catTitles.some(e => e.category === catName))) {
                 catTitles.push(new cat_titles(catName, boardHtml, board.category_id));
             } else {
                 catTitles.forEach(pair => {
-                    if (pair.category == catName) {                        
+                    if (pair.category == catName) {
                         catTitles[i].titles += boardHtml;
                     }
                     i++;
@@ -112,13 +142,22 @@ function parseBoardsToHtml(res) {
             }
         });
         boards_html = makeBoardsHtml(catTitles);
+        if (boards_type == "shared") {
+            boards_html = "<h1>Freigegebende Boards</h1>" + boards_html;
+        } else if (boards_type == "own") {
+            boards_html = "<h1>Persönliche Boards</h1>" + boards_html;
+        }
     } else {
-        boards_html = "<h2>Bisher wurden noch keine Boards erstellt</h2>" + makeCreateBoardHtml(-1);
-    }    
+        if (boards_type == "own") {
+            boards_html = EMPTY_BOARDS_HTML + makeCreateBoardHtml(-1);
+        } else if (boards_type == "shared") {
+            boards_html = EMPTY_SHARED_BOARDS_HTML;
+        }
+    }
     return boards_html;
 }
 
-function cat_titles (category, firstTitle, category_id){
+function cat_titles(category, firstTitle, category_id) {
     this.category = category;
     this.titles = firstTitle;
     this.category_id = category_id;
@@ -128,7 +167,7 @@ function makeBoardHtml(id, title) {
     return `<div id="board_${id}" class="boards">${title}</div>`;
 }
 
-function makeBoardsHtml(catTitles){
+function makeBoardsHtml(catTitles) {
     var boards_html = "";
     catTitles.forEach(pair => {
         boards_html += `<div class="board_category catidc_${pair.category_id}"><h2>${pair.category}</h2><div class="board_titles_content">${pair.titles}${makeCreateBoardHtml(pair.category_id)}</div></div>`;
@@ -136,6 +175,6 @@ function makeBoardsHtml(catTitles){
     return boards_html;
 }
 
-function makeCreateBoardHtml(category_id){
+function makeCreateBoardHtml(category_id) {
     return `<div id="dashboard_create"><p id="dashboard_create_button" class="catid_${category_id}" onclick="createBoard(this)">Neues Board erstellen</p></div>`;
 }
