@@ -8,6 +8,8 @@ document.querySelectorAll(".login_input_field").forEach(elem => {
 });
 
 function login(){    
+    var loginBtn = document.getElementById("login_submit");
+    loginBtn.style.backgroundColor = "lightgrey";
     const reqUrl = url + "/user/login"
     var req = new XMLHttpRequest();
     req.overrideMimeType("application/json");
@@ -21,7 +23,12 @@ function login(){
                 document.cookie = "token=" + jsonResponse.token + "; expires=" + expireDate + ";path=/;sameSite=strict";
                 window.location = window.location.protocol + "//" + window.location.host + "/dashboard/";
             } else if (this.status == 401) {
-                document.getElementById("login_response").innerHTML = "Nutzername oder Passwort falsch!";
+                var errMsg = document.getElementById("login_response");
+                errMsg.innerHTML = "Nutzername oder Passwort falsch!";
+                errMsg.style.marginTop = "0";
+                errMsg.style.opacity = "1";
+                errMsg.style.visibility = "visible";
+                loginBtn.style.backgroundColor = "#5aac44";
             }
         }
     }

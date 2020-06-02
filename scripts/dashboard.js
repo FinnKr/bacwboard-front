@@ -90,6 +90,8 @@ function createBoardRequest() {
     var title = document.getElementById("create_board_title");
     var category = document.getElementById("create_board_category");
     if (title.value && category.value) {
+        btnSbm.classList.remove("create_board_submit_active");
+        btnSbm.classList.add("create_board_submit");
         const board = JSON.stringify({
             "title": document.getElementById("create_board_title").value,
             "category": document.getElementById("create_board_category").value
@@ -107,7 +109,8 @@ function createBoardRequest() {
                 } else if (this.status == 401) {
                     window.location = UNAUTHORIZED_URL;
                 } else if (this.status == 422) {
-                    // Existiert bereits
+                    showErrMsg("Ein Board mit diesem Titel existiert bereits");
+                    setTimeout(hideErrMsg, 5000);
                 } else {
                     console.log(this.status + "\n" + this.responseText);
 
@@ -119,6 +122,22 @@ function createBoardRequest() {
         btnSbm.classList.remove("create_board_submit_active");
         btnSbm.classList.add("create_board_submit");
     }
+}
+
+function showErrMsg(message) {
+    var errMsg = document.getElementById("create_response");
+    errMsg.innerHTML = message;
+    errMsg.style.marginTop = "0";
+    errMsg.style.opacity = "1";
+    errMsg.style.visibility = "visible";
+    errMsg.style.width = "80%";
+}
+
+function hideErrMsg() {
+    var errMsg = document.getElementById("create_response");
+    errMsg.style.opacity = "0";
+    errMsg.style.visibility = "hidden";
+    setTimeout(function(){ errMsg.style.marginTop = "-50px"; }, 1050);
 }
 
 function parseBoardsToHtml(res, boards_type) {

@@ -21,10 +21,12 @@
         <div id="create_board_modal" class="modal">
             <div class="modal-content">
                 <span class="close_modal">&times;</span>
-                <p>Create Board</p>
+                <div id="create_response" class="error-msg">
+                </div>
+                <p><b>Create Board</b></p>
                 <input type="text" class="create_board_input" id="create_board_title" placeholder="Board-Titel">
                 <input type="text" class="create_board_input" id="create_board_category" placeholder="Kategorie">
-                <p id="create_board_submit" class="create_board_submit" onclick="createBoardRequest()">Neues Board erstellen</p>
+                <p id="create_board_submit" class="create_board_submit" onclick="createBoardRequest()"><b>Neues Board erstellen</b></p>
             </div>
         </div>
 
