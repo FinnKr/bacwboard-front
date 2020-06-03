@@ -41,7 +41,6 @@ function getSharedBoards(){
         if (this.readyState == 4) {
             if (this.status == 200) {
                 var jsonResponse = JSON.parse(req.responseText);
-                console.log(jsonResponse);
                 content.innerHTML = parseBoardsToHtml(jsonResponse, "shared");
             } else if (this.status == 401) {
                 window.location = UNAUTHORIZED_URL;
@@ -88,8 +87,8 @@ function createBoard(el) {
 function createBoardRequest() {
     var btnSbm = document.getElementById("create_board_submit");
     var title = document.getElementById("create_board_title");
-    var category = document.getElementById("create_board_category");
-    if (title.value && category.value) {
+    var category = document.getElementById("create_board_category");    
+    if (title.value && category.value && btnSbm.classList.contains("create_board_submit_active")) {
         btnSbm.classList.remove("create_board_submit_active");
         btnSbm.classList.add("create_board_submit");
         const board = JSON.stringify({
@@ -113,7 +112,6 @@ function createBoardRequest() {
                     setTimeout(hideErrMsg, 5000);
                 } else {
                     console.log(this.status + "\n" + this.responseText);
-
                 }
             }
         }
@@ -128,8 +126,8 @@ function showErrMsg(message) {
     var errMsg = document.getElementById("create_response");
     errMsg.innerHTML = message;
     errMsg.style.marginTop = "0";
-    errMsg.style.opacity = "1";
     errMsg.style.visibility = "visible";
+    errMsg.style.opacity = "1";
     errMsg.style.width = "80%";
 }
 
@@ -176,6 +174,12 @@ function parseBoardsToHtml(res, boards_type) {
     return boards_html;
 }
 
+function openBoard(elem) {
+    var board_id = elem.id.substring(6);
+    window.location = BOARD_URL + "?board_id=" + board_id;
+    
+}
+
 function cat_titles(category, firstTitle, category_id) {
     this.category = category;
     this.titles = firstTitle;
@@ -183,7 +187,7 @@ function cat_titles(category, firstTitle, category_id) {
 }
 
 function makeBoardHtml(id, title) {
-    return `<div id="board_${id}" class="boards">${title}</div>`;
+    return `<div id="board_${id}" class="boards" onclick="openBoard(this)">${title}</div>`;
 }
 
 function makeBoardsHtml(catTitles) {

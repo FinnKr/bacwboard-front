@@ -21,13 +21,10 @@ function login(){
                 var jsonResponse = JSON.parse(req.responseText);
                 var expireDate = getExpireDate();
                 document.cookie = "token=" + jsonResponse.token + "; expires=" + expireDate + ";path=/;sameSite=strict";
-                window.location = window.location.protocol + "//" + window.location.host + "/dashboard/";
+                window.location = DASHBOARD_URL;
             } else if (this.status == 401) {
-                var errMsg = document.getElementById("login_response");
-                errMsg.innerHTML = "Nutzername oder Passwort falsch!";
-                errMsg.style.marginTop = "0";
-                errMsg.style.opacity = "1";
-                errMsg.style.visibility = "visible";
+                showErrMsg("Nutzername oder Passwort falsch");
+                setTimeout(hideErrMsg, 5000);
                 loginBtn.style.backgroundColor = "#5aac44";
             }
         }
@@ -37,6 +34,21 @@ function login(){
         "password": document.getElementById("login_password").value
     });
     req.send(reqBody);
+}
+
+function showErrMsg(message) {
+    var errMsg = document.getElementById("login_response");
+    errMsg.innerHTML = message;
+    errMsg.style.marginTop = "0";
+    errMsg.style.visibility = "visible";
+    errMsg.style.opacity = "1";
+}
+
+function hideErrMsg() {
+    var errMsg = document.getElementById("login_response");
+    errMsg.style.opacity = "0";
+    errMsg.style.visibility = "hidden";
+    setTimeout(function(){ errMsg.style.marginTop = "-50px"; }, 1050);
 }
 
 function getExpireDate(){

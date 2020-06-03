@@ -1,3 +1,8 @@
+/**
+ * Get the value of a cookie with specified name
+ * @param   {String}    cname   The name of the cookie to find
+ * @return  {String}            The value of the cookie
+ */
 function getCookieByName(cname){
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);    
@@ -12,4 +17,23 @@ function getCookieByName(cname){
         }
     }
     return -1;
-}
+};
+
+/**
+ * Get the URL parameters
+ * source: https://css-tricks.com/snippets/javascript/get-url-variables/
+ * @param   {String} url_string The URL
+ * @return  {Obejct}            The URL parameters
+ */
+function getParams(url_string){
+    var params = {};
+    var parser = document.createElement("a");
+    parser.href = url_string;
+    var query = parser.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        params[pair[0]] = decodeURIComponent(pair[1]);
+    }
+    return params;
+};
