@@ -6,7 +6,7 @@ body {
     background-color: #5f5f5f;
     height: 40px;
     overflow: hidden;
-    position: relative;
+    position: fixed;
     z-index: 10;
     display: flex;
     min-height: 40px;
@@ -49,4 +49,41 @@ body {
 
 .menu_items-right {
     float: right;
+}
+
+.board-lists {
+    display: flex;
+    overflow: auto;
+}
+
+.list-element {
+    width: 275px;
+    min-width: 275px;
+    background-color: rgba(0,0,0,0.1);
+    margin: 0px 8px;
+    padding: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#create-list-btn {
+    width: 275px;
+    min-width: 275px;
+    background-color: rgba(76,175,80,0.7);
+    margin: 0px 8px;
+    padding: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#board_content {
+    position: absolute;
+    bottom: 0px;
+    top: 80px;
+}
+
+#board-title {
+    font-size: 24px;
+    position: fixed;
+    top: 40px;
 }
