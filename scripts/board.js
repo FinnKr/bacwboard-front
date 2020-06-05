@@ -38,7 +38,6 @@ function createListRequest(board_id){
         if (this.readyState == 4){
             if (this.status == 201) {
                 // created
-                console.log("created");
                 getLists();
             } else if (this.status == 401) {
                 window.location = UNAUTHORIZED_URL;
@@ -65,7 +64,16 @@ function createListRequest(board_id){
 function createList(board_id, elem) {
     var container = elem.parentElement;
     container.innerHTML = createListInputHtml(board_id);
-    console.log(createListInputHtml(board_id));
+    var form = document.getElementById("create-list-form");
+    var doms = [form, elem]    
+    Array.from(form.getElementsByTagName("*")).forEach(el => {
+        doms.push(el);
+    });
+    window.onclick = function() {
+        if(!(doms.includes(this.event.target))){
+            container.innerHTML = elem.outerHTML;            
+        }
+    }
 }
 
 function parseListsToHtml(res){
@@ -87,7 +95,7 @@ function createListBtnHtml(board_id){
 }
 
 function createListHtml(list_id, list_title){
-    return `<div id="list_${list_id}" class="list-element">${list_title}</div>`;
+    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element">${list_title}</div></div>`;
 }
 
 function createListInputHtml(board_id){

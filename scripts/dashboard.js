@@ -73,7 +73,7 @@ function createBoard(el) {
     category.value = currentCategory;
     document.querySelectorAll(".create_board_input").forEach(elem => {
         elem.addEventListener("keyup", function () {
-            if (!title.value || !category.value) {
+            if (!title.value.trim() || !category.value.trim()) {
                 btnSbm.classList.remove("create_board_submit_active");
                 btnSbm.classList.add("create_board_submit");
             } else {
@@ -86,14 +86,14 @@ function createBoard(el) {
 
 function createBoardRequest() {
     var btnSbm = document.getElementById("create_board_submit");
-    var title = document.getElementById("create_board_title");
-    var category = document.getElementById("create_board_category");    
-    if (title.value && category.value && btnSbm.classList.contains("create_board_submit_active")) {
+    var title = document.getElementById("create_board_title").value.trim();
+    var category = document.getElementById("create_board_category").value.trim();
+    if (title && category && btnSbm.classList.contains("create_board_submit_active")) {
         btnSbm.classList.remove("create_board_submit_active");
         btnSbm.classList.add("create_board_submit");
         const board = JSON.stringify({
-            "title": document.getElementById("create_board_title").value,
-            "category": document.getElementById("create_board_category").value
+            "title": title,
+            "category": category
         });
         var reqUrl = url + "/board";
         var req = new XMLHttpRequest();
