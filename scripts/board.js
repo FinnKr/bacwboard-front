@@ -69,6 +69,14 @@ function createList(board_id, elem) {
     Array.from(form.getElementsByTagName("*")).forEach(el => {
         doms.push(el);
     });
+    var inputField = document.getElementById("create-list-input");
+    inputField.addEventListener("keyup", function(event){
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("create-list-submit").click();
+        }
+    });
+    inputField.focus();
     window.onclick = function() {
         if(!(doms.includes(this.event.target))){
             container.innerHTML = elem.outerHTML;            
