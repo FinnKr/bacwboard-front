@@ -61,6 +61,43 @@ function createListRequest(board_id){
     req.send(list);
 }
 
+function createListentryRequest(list_id) {
+    var listentry_title = document.getElementById(`add-list-entry-input-${list_id}`).value.trim();
+    if (listentry_title) {
+        var reqUrl = url + "/list/entry";
+        var req = new XMLHttpRequest();
+        req.overrideMimeType("application/json");
+        req.open("POST", reqUrl, true);
+        req.setRequestHeader("Content-type", "application/json");
+        req.setRequestHeader("Authorization", getCookieByName("token"));
+        req.onreadystatechange = function() {
+            if (this.readyState == 4){
+                if (this.status == 201) {
+                    // created
+                    console.log("created");
+                } else if (this.status == 401) {
+                    window.location = UNAUTHORIZED_URL;
+                } else if (this.status == 404) {
+                    // not found
+                    console.log("not found");
+                } else if (this.status == 422) {
+                    // duplicate
+                    console.log("duplicate");
+                } else {
+                    console.log(this.status);
+                    console.log(this.responseText);
+                }
+            }
+        }
+        const listentry = JSON.stringify({
+            "title": listentry_title,
+            "list_id": list_id
+        });
+        console.log(listentry);
+        req.send(listentry);
+    }
+}
+
 function createList(board_id, elem) {
     var container = elem.parentElement;
     container.innerHTML = createListInputHtml(board_id);
@@ -98,12 +135,45 @@ function parseListsToHtml(res){
     return content_html;
 }
 
+function createListEntry(btn_el, list_id){
+    var wrapper = btn_el.parentElement;
+    wrapper.innerHTML = `<div id="create-listentry-form-${list_id}">` + listEntryInput(list_id) + `<div id="add-listentry-btns">` + addListEntryBtnHtml(list_id) + hideListentryFormHtml(list_id) + "</div></div>";
+    var input_element = document.getElementById(`add-list-entry-input-${list_id}`);
+    input_element.addEventListener("keyup", function(event){
+        if (event.keyCode === 13){
+            event.preventDefault();
+            document.getElementById(`add-list-entry-${list_id}`);
+        }
+    });
+    input_element.focus();
+}
+
+function hideListentryForm(list_id){
+    document.getElementById(`create-listentry-form-${list_id}`).parentElement.innerHTML = createListEntryBtnHtml(list_id);
+}
+
+function createListEntryBtnHtml(list_id) {
+    return `<div id="create-listentry-btn-${list_id}" class="create-listentry-btn" onclick="createListEntry(this, ${list_id})"><b>+</b> Einen Eintrag hinzufügen</div>`;
+}
+
+function hideListentryFormHtml(list_id){
+    return `<div id="hide-listentry-btn" onclick="hideListentryForm(${list_id})">&times;</div>`
+}
+
+function listEntryInput(list_id){
+    return `<input type="text" placeholder="Titel des neuen Eintrags" id="add-list-entry-input-${list_id}" class="add-list-entry-input">`;
+}
+
+function addListEntryBtnHtml(list_id){
+    return `<div id="add-list-entry-${list_id}" class="add-list-entry" onclick="createListentryRequest(${list_id})">Eintrag hinzufügen</div>`;
+}
+
 function createListBtnHtml(board_id){
     return `<div id="create-list"><div id="create-list-btn" onclick="createList(${board_id}, this)"><b>+</b>Liste hinzufügen</div></div>`;
 }
 
 function createListHtml(list_id, list_title){
-    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element">${list_title}</div></div>`;
+    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element"><div id="list-title-${list_id}" class="list-title"><b>${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
 }
 
 function createListInputHtml(board_id){

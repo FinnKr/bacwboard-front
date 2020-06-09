@@ -59,7 +59,7 @@ body {
 .list-element {
     width: 275px;
     min-width: 275px;
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(0,0,0,.1);
     margin: 0px 8px;
     padding: 10px;
     border-radius: 3px;
@@ -69,7 +69,7 @@ body {
 #create-list-btn {
     width: 275px;
     min-width: 275px;
-    background-color: rgba(76,175,80,0.8);
+    background-color: rgba(76,175,80,.8);
     margin: 0px 8px;
     padding: 10px;
     border-radius: 3px;
@@ -123,4 +123,50 @@ body {
 
 #create-list-submit:hover {
     background-color: rgb(18,109,255);
+}
+
+.create-listentry-btn {
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 3px;
+    color: rgba(0,0,0,0.6);
+}
+
+.create-listentry-btn:hover {
+    background-color: rgba(0, 0, 0, .15);
+    color: #000;
+}
+
+.add-list-entry {
+    background-color: #4caf50;
+    padding: 5px 0px;
+    border-radius: 3px;
+    width: 155px;
+    color: #fff;
+    text-align: center;
+    margin-right: 5px;
+}
+
+.add-list-entry:hover {
+    background-color: #388f50;
+}
+
+#add-listentry-btns {
+    display: flex;
+    margin-top: 5px;
+}
+
+#hide-listentry-btn {
+    color: rgba(0,0,0,.4);
+    line-height: 27px;
+    font-size: 35px;
+}
+
+#hide-listentry-btn:hover {
+    color: #000;
+}
+
+.add-list-entry-input {
+    width: 250px;
+    margin-top:8px;
 }
