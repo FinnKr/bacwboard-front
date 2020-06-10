@@ -13,6 +13,7 @@ function getLists(){
             if (this.status == 200) {
                 var jsonResponse = JSON.parse(req.responseText);                
                 content.innerHTML = parseListsToHtml(jsonResponse);
+                getListentries();
             } else if (this.status == 401) {
                 window.location = UNAUTHORIZED_URL;
             } else if (this.status == 404) {
@@ -75,6 +76,10 @@ function createListentryRequest(list_id) {
                 if (this.status == 201) {
                     // created
                     console.log("created");
+                    getListentries();
+                    var curInput = document.getElementById(`add-list-entry-input-${list_id}`);
+                    curInput.value = "";
+                    curInput.focus();
                 } else if (this.status == 401) {
                     window.location = UNAUTHORIZED_URL;
                 } else if (this.status == 404) {
@@ -95,6 +100,35 @@ function createListentryRequest(list_id) {
         });
         console.log(listentry);
         req.send(listentry);
+    }
+}
+
+function getListentries(){
+    var board_id = getParams(window.location.href).board_id;
+    if (!board_id) {
+        content.innerHTML = "<h1>Dieses Board existiert nicht</h1>";
+    } else {
+        var reqUrl = url + "/list/entry?board_id=" + board_id;
+        var req = new XMLHttpRequest();
+        req.overrideMimeType("application/json");
+        req.open("GET", reqUrl, true);
+        req.setRequestHeader("Authorization", getCookieByName("token"));
+        req.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    var jsonResponse = JSON.parse(req.responseText);                
+                    parseListentriesToHtml(jsonResponse);
+                } else if (this.status == 401) {
+                    window.location = UNAUTHORIZED_URL;
+                } else if (this.status == 404) {
+                    content.innerHTML = "<h1>Dieses Board existiert nicht</h1>";
+                } else {
+                    console.log(this.status);
+                    console.log(this.responseText);
+                }
+            }
+        }
+        req.send();
     }
 }
 
@@ -122,7 +156,8 @@ function createList(board_id, elem) {
 }
 
 function parseListsToHtml(res){
-    var content_html = ""
+    res.sort((a, b) => { return a.order_number - b.order_number });
+    var content_html = "";
     res.forEach(function(list, index, array){
         if (!(index == array.length -1)){
             content_html += createListHtml(list.id, list.title);
@@ -135,6 +170,17 @@ function parseListsToHtml(res){
     return content_html;
 }
 
+function parseListentriesToHtml(res){
+    res.sort((a, b) => { return a.order_number - b.order_number });
+    document.querySelectorAll(".list-content").forEach(content => {
+        content.innerHTML = "";
+    });
+    res.forEach(listentry => {
+        var listcontent = document.getElementById(`list-content-${listentry.list_id}`);
+        listcontent.innerHTML += `<div id="list-entry-item-${listentry.id}" class="list-entry-item">${listentry.title}</div>`;
+    });
+}
+
 function createListEntry(btn_el, list_id){
     var wrapper = btn_el.parentElement;
     wrapper.innerHTML = `<div id="create-listentry-form-${list_id}">` + listEntryInput(list_id) + `<div id="add-listentry-btns">` + addListEntryBtnHtml(list_id) + hideListentryFormHtml(list_id) + "</div></div>";
@@ -142,7 +188,7 @@ function createListEntry(btn_el, list_id){
     input_element.addEventListener("keyup", function(event){
         if (event.keyCode === 13){
             event.preventDefault();
-            document.getElementById(`add-list-entry-${list_id}`);
+            document.getElementById(`add-list-entry-${list_id}`).click();
         }
     });
     input_element.focus();
