@@ -27,8 +27,10 @@
                     var text = document.createTextNode("---------");
                     div.appendChild(text);
                     div.id = "dropped-pos-style";
-                    //document.getElementById("anchor").appendChild(div)
-                    event.target.parentNode.insertBefore(div, event.target.nextSibling);
+                    var parent = event.target.parentNode;
+                    if (parent){
+                        parent.insertBefore(div, event.target.nextSibling);
+                    }
             }
 
             function drag(event){
@@ -62,8 +64,5 @@
         <br>
         <div id="listwrapp2" class="listwrapp" ondrop="drop(event)" ondragover="allowDrop(event)">
         </div>
-        <br>
-        <br>
-        <div id="anchor"></div>
     </body>
 </html>

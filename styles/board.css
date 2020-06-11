@@ -179,11 +179,14 @@ body {
 }
 
 .list-entry-item {
-    margin: 5px 8px;
     background-color: #fff;
     padding: 4px;
     border-radius: 3px;
     box-shadow: 0 1px 0 rgba(9,30,66,.25);
+}
+
+.listentry-wrapper {
+    padding: 5px 8px;
 }
 
 .list-entry-item:hover {

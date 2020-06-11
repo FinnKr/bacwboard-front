@@ -177,13 +177,13 @@ function parseListentriesToHtml(res){
     });
     res.forEach(listentry => {
         var listcontent = document.getElementById(`list-content-${listentry.list_id}`);
-        listcontent.innerHTML += `<div id="list-entry-item-${listentry.id}" class="list-entry-item">${listentry.title}</div>`;
+        listcontent.innerHTML += listEntryHtml(listentry.id, listentry.title);
     });
 }
 
 function createListEntry(btn_el, list_id){
     var wrapper = btn_el.parentElement;
-    wrapper.innerHTML = `<div id="create-listentry-form-${list_id}">` + listEntryInput(list_id) + `<div id="add-listentry-btns">` + addListEntryBtnHtml(list_id) + hideListentryFormHtml(list_id) + "</div></div>";
+    wrapper.innerHTML = `<div id="create-listentry-form-${list_id}" class="create-listentry-form">` + listEntryInput(list_id) + `<div id="add-listentry-btns">` + addListEntryBtnHtml(list_id) + hideListentryFormHtml(list_id) + "</div></div>";
     var input_element = document.getElementById(`add-list-entry-input-${list_id}`);
     input_element.addEventListener("keyup", function(event){
         if (event.keyCode === 13){
@@ -196,6 +196,10 @@ function createListEntry(btn_el, list_id){
 
 function hideListentryForm(list_id){
     document.getElementById(`create-listentry-form-${list_id}`).parentElement.innerHTML = createListEntryBtnHtml(list_id);
+}
+
+function listEntryHtml(listentry_id, listentry_title){
+    return `<div id="listentry-wrapper-${listentry_id}" class="listentry-wrapper" draggable="true" ondragstart="drag(event)"><div id="list-entry-item-${listentry_id}" class="list-entry-item">${listentry_title}</div></div>`;
 }
 
 function createListEntryBtnHtml(list_id) {
@@ -219,7 +223,7 @@ function createListBtnHtml(board_id){
 }
 
 function createListHtml(list_id, list_title){
-    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element"><div id="list-title-${list_id}" class="list-title"><b>${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
+    return `<div id="list-wrapper"  ondrop="drop(event)" ondragover="allowDrop(event)"><div id="list_${list_id}" class="list-element"><div id="list-title-${list_id}" class="list-title"><b>${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
 }
 
 function createListInputHtml(board_id){
