@@ -104,6 +104,7 @@ function createListentryRequest(list_id) {
 }
 
 function getListentries(){
+    var content = document.getElementById("board_content");
     var board_id = getParams(window.location.href).board_id;
     if (!board_id) {
         content.innerHTML = "<h1>Dieses Board existiert nicht</h1>";
@@ -130,6 +131,32 @@ function getListentries(){
         }
         req.send();
     }
+}
+
+function moveListentryRequest(listEntryId, upperListEntryId, listId){
+    var reqUrl = url + "/list/entry/changeorder";
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("PUT", reqUrl, true);
+    req.onreadystatechange = function() {
+        if (this.readyState == 4){
+            if (this.status == 200){
+                getListentries();
+            } else if (this.status == 401) {
+                window.location = UNAUTHORIZED_URL;
+            } else if (this.status == 304) {
+                console.log("Not modified");                
+            } else if (this.status == 404) {
+                console.log("Moved listentry not found");
+            }
+        }
+    }
+    const changeInfo = {
+        id: listEntryId,
+        upperId: upperListEntryId,
+        list_id: listId
+    }
+    req.send(changeInfo);
 }
 
 function createList(board_id, elem) {
@@ -223,7 +250,7 @@ function createListBtnHtml(board_id){
 }
 
 function createListHtml(list_id, list_title){
-    return `<div id="list-wrapper"  ondrop="drop(event)" ondragover="allowDrop(event)"><div id="list_${list_id}" class="list-element"><div id="list-title-${list_id}" class="list-title"><b>${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
+    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element"><div id="list-title-${list_id}" class="list-title"><b>${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
 }
 
 function createListInputHtml(board_id){

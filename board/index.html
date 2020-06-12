@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ondrop="drop(event)" ondragover="allowDrop(event)">
     <head>
         <meta charset="UTF-8">
         <meta name="description" content="Kanban-Productivity-Tool im Bezirksamt Charlottenburg-Wilmersdorf">
@@ -8,7 +8,7 @@
         <title>BACWBoard</title>
         <link rel="stylesheet" href="../styles/style.css">
         <link rel="stylesheet" href="../styles/board.css">
-        <link rel="stylesheet" href="../styles/draggable-list.css">
+        <link rel="stylesheet" href="../styles/draggable-listentry.css">
         <script src="../scripts/constants.js"></script>
     </head>
     <body>
@@ -27,7 +27,7 @@
             </div>
         </div>
     <script src="../scripts/functions.js"></script>
-    <script src="../scripts/draggable-list.js"></script>
+    <script src="../scripts/draggable-listentry.js"></script>
     <script src="../scripts/board.js"></script>
     </body>
 </html>

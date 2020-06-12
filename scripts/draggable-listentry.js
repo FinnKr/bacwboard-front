@@ -1,39 +1,35 @@
 function allowDrop(event){
     var tar = event.target;
     var tarCL = tar.classList;
-    if (tarCL.contains("listentry-wrapper")) {
+    if (!(tar.id == "dropped-pos-style")){
         removeShadow();
+        }
+    if (tarCL.contains("listentry-wrapper")) {
         var shadow = setShadow();
         var parent = tar.parentNode;
         if (parent){
             parent.insertBefore(shadow, tar.nextSibling);
         }
     } else if(tarCL.contains("list-entry-item")){
-        removeShadow();
         var shadow = setShadow();
         var parent = tar.parentNode.parentNode;
         if (parent){
             parent.insertBefore(shadow, tar.parentNode.nextSibling);
         }
     } else if (tar.id == "list-wrapper"){
-        removeShadow();
         var shadow = setShadow();
         tar.getElementsByClassName("list-content")[0].appendChild(shadow);
     } else if (tarCL.contains("list-title")){
-        removeShadow();
         var shadow = setShadow();
         tar.nextSibling.insertBefore(shadow, tar.nextSibling.firstChild);
     } else if (tar.id == "create-listentry"){
-        removeShadow();
         var shadow = setShadow();
         tar.parentNode.getElementsByClassName("list-content")[0].appendChild(shadow);
     } else if (containsInList(tarCL, ["create-listentry-btn", "create-listentry-form", "add-list-entry-input", "add-list-entry"]) 
                 || tar.id == "add-listentry-btns" || tar.id == "hide-listentry-btn"){
-        removeShadow();
         var shadow = setShadow();
         tar.closest("#create-listentry").parentNode.getElementsByClassName("list-content")[0].appendChild(shadow);
     } else if (tarCL.contains("list-element")) {
-        removeShadow();
         var shadow = setShadow();
         tar.getElementsByClassName("list-content")[0].appendChild(shadow);
     } else {
@@ -61,13 +57,17 @@ function drop(event){
     if (oldShadow){
         event.preventDefault();
         var data = event.dataTransfer.getData("text");
-        oldShadow.replaceWith(document.getElementById(data));
+        var listentryElem = document.getElementById(data);
+        oldShadow.replaceWith(listentryElem);
+        var listEntryId = data.substring(18);
+        var upperListEntryHtmlId = listentryElem.previousElementSibling.id;
+        var upperListEntryId = -1;
+        if (/listentry-wrapper-*/.test(upperListEntryHtmlId)){
+            upperListEntryId = upperListEntryHtmlId.substring(18);
+        }
+        var listId = listentryElem.parentElement.id.substring(13);
+        moveListentryRequest(listEntryId, upperListEntryId, listId);
     }
-    // if (event.target.getAttribute("draggable") == "true"){
-    //     event.target.parentNode.insertBefore(document.getElementById(data), event.target.nextSibling);
-    // } else {
-    //     event.target.appendChild(document.getElementById(data));
-    // }
 }
 
 function setShadow(){
