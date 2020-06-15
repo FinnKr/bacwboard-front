@@ -60,9 +60,9 @@ function drop(event){
         var listentryElem = document.getElementById(data);
         oldShadow.replaceWith(listentryElem);
         var listEntryId = data.substring(18);
-        var upperListEntryHtmlId = listentryElem.previousElementSibling.id;
         var upperListEntryId = -1;
-        if (/listentry-wrapper-*/.test(upperListEntryHtmlId)){
+        if (listentryElem.previousElementSibling){
+            var upperListEntryHtmlId = listentryElem.previousElementSibling.id;
             upperListEntryId = upperListEntryHtmlId.substring(18);
         }
         var listId = listentryElem.parentElement.id.substring(13);

@@ -138,8 +138,12 @@ function moveListentryRequest(listEntryId, upperListEntryId, listId){
     var req = new XMLHttpRequest();
     req.overrideMimeType("application/json");
     req.open("PUT", reqUrl, true);
+    req.setRequestHeader("Content-type", "application/json");
+    req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function() {
         if (this.readyState == 4){
+            console.log(this.status);
+            console.log(this.responseText);
             if (this.status == 200){
                 getListentries();
             } else if (this.status == 401) {
@@ -151,11 +155,12 @@ function moveListentryRequest(listEntryId, upperListEntryId, listId){
             }
         }
     }
-    const changeInfo = {
-        id: listEntryId,
-        upperId: upperListEntryId,
-        list_id: listId
-    }
+    const changeInfo = JSON.stringify({
+        "id": listEntryId,
+        "upperId": upperListEntryId,
+        "list_id": listId
+    });
+    console.log(changeInfo);
     req.send(changeInfo);
 }
 
