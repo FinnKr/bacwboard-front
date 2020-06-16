@@ -58,7 +58,6 @@ function createListRequest(board_id){
         "title": list_title,
         "board_id": board_id
     });
-    console.log(list);
     req.send(list);
 }
 
@@ -75,7 +74,6 @@ function createListentryRequest(list_id) {
             if (this.readyState == 4){
                 if (this.status == 201) {
                     // created
-                    console.log("created");
                     getListentries();
                     var curInput = document.getElementById(`add-list-entry-input-${list_id}`);
                     curInput.value = "";
@@ -98,7 +96,6 @@ function createListentryRequest(list_id) {
             "title": listentry_title,
             "list_id": list_id
         });
-        console.log(listentry);
         req.send(listentry);
     }
 }
@@ -142,8 +139,6 @@ function moveListentryRequest(listEntryId, upperListEntryId, listId){
     req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function() {
         if (this.readyState == 4){
-            console.log(this.status);
-            console.log(this.responseText);
             if (this.status == 200){
                 getListentries();
             } else if (this.status == 401) {
@@ -152,6 +147,9 @@ function moveListentryRequest(listEntryId, upperListEntryId, listId){
                 console.log("Not modified");                
             } else if (this.status == 404) {
                 console.log("Moved listentry not found");
+            } else {
+                console.log(this.status);
+                console.log(this.responseText);
             }
         }
     }
@@ -160,7 +158,6 @@ function moveListentryRequest(listEntryId, upperListEntryId, listId){
         "upperId": upperListEntryId,
         "list_id": listId
     });
-    console.log(changeInfo);
     req.send(changeInfo);
 }
 

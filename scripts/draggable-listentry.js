@@ -74,6 +74,8 @@ function setShadow(){
     event.preventDefault();
     var shadow = document.createElement('div');
     shadow.id = "dropped-pos-style";
+    shadow.ondragover = function(){return false};
+    shadow.setAttribute("ondrop", "drop(event)");
     return shadow;
 }
 
