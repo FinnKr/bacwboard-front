@@ -161,6 +161,65 @@ function moveListentryRequest(listEntryId, upperListEntryId, listId){
     req.send(changeInfo);
 }
 
+function changeBoardTitleRequest(newTitle){
+    var reqUrl = url + "/board/" + getParams(window.location.href).board_id;
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("PUT", reqUrl, true);
+    req.setRequestHeader("Content-type", "application/json");
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function(){
+        if (this.readyState == 4){
+            if (this.status == 200){
+
+            } else if (this.status == 401){
+                window.location = UNAUTHORIZED_URL;
+            } else if (this.status == 304){
+                // not modified
+            } else if (this.status == 404){
+                // not found
+            } else {
+                console.log(this.status);
+                console.log(this.responseText);
+            }
+        }
+    }
+    const newTitleJson = JSON.stringify({
+        "title": newTitle
+    });
+    req.send(newTitleJson);
+}
+
+function addSharedUserRequest(sharedMail){
+    var reqUrl = url + "/share";
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("POST", reqUrl, true);
+    req.setRequestHeader("Content-type", "application/json");
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function (){
+        if (this.readyState == 4){
+            if (this.status == 201){
+
+            } else if (this.status == 401){
+                window.location = UNAUTHORIZED_URL;
+            } else if (this.status == 404){
+                // not found
+            } else if (this.status == 422){
+                // duplicate
+            } else {
+                console.log(this.status);
+                console.log(this.responseText);    
+            }
+        }
+    }
+    const sharedUser = JSON.stringify({
+        "shared_user_mail": sharedMail,
+        "board_id": getParams(window.location.href).board_id
+    });
+    req.send(sharedUser);
+}
+
 function createList(board_id, elem) {
     var container = elem.parentElement;
     container.innerHTML = createListInputHtml(board_id);
@@ -225,6 +284,72 @@ function createListEntry(btn_el, list_id){
 
 function hideListentryForm(list_id){
     document.getElementById(`create-listentry-form-${list_id}`).parentElement.innerHTML = createListEntryBtnHtml(list_id);
+}
+
+function manageBoard(el){
+    showModal("manage_board_modal");
+    var boardTitleInput = document.getElementById("manage_board_title");
+    var boardTitleSubmit = document.getElementById("change_title_submit");
+    var oldTitle = document.getElementById("board-title").innerText;
+    boardTitleInput.value = oldTitle;
+    boardTitleInput.addEventListener("keyup", () => {
+        if (!boardTitleInput.value.trim() || boardTitleInput.value == oldTitle) {
+            boardTitleSubmit.classList.remove("manage_board_submit_active");
+            boardTitleSubmit.classList.add("manage_board_submit");
+        } else {
+            boardTitleSubmit.classList.remove("manage_board_submit");
+            boardTitleSubmit.classList.add("manage_board_submit_active");
+        }
+    });
+    var accessUserInput = document.getElementById("add_shared_user");
+    var accessUserSubmit = document.getElementById("add_user_submit");
+    accessUserInput.addEventListener("keyup", () => {
+        if (!accessUserInput.value.trim()) {
+            accessUserSubmit.classList.remove("manage_board_submit_active");
+            accessUserSubmit.classList.add("manage_board_submit");
+        } else {
+            accessUserSubmit.classList.remove("manage_board_submit");
+            accessUserSubmit.classList.add("manage_board_submit_active");
+        }
+    });
+}
+
+function changeBoardTitle(){
+    var newTitle = document.getElementById("manage_board_title").value;
+    var boardTitleSubmit = document.getElementById("change_title_submit");
+    if (!newTitle.trim()){
+        boardTitleSubmit.classList.remove("manage_board_submit_active");
+        boardTitleSubmit.classList.add("manage_board_submit");
+    } else {
+        changeBoardTitleRequest(newTitle);
+    }
+}
+
+function addSharedUser(){
+    var sharedMail = document.getElementById("add_shared_user").value;
+    var addUserSubmit = document.getElementById("add_user_submit");
+    if (!sharedMail.trim()){
+        addUserSubmit.classList.remove("manage_board_submit_active");
+        addUserSubmit.classList.add("manage_board_submit");
+    } else {
+        addSharedUserRequest(sharedMail);
+    }
+}
+
+function showErrMsg(message) {
+    var errMsg = document.getElementById("edit_response");
+    errMsg.innerHTML = message;
+    errMsg.style.marginTop = "0";
+    errMsg.style.visibility = "visible";
+    errMsg.style.opacity = "1";
+    errMsg.style.width = "80%";
+}
+
+function hideErrMsg() {
+    var errMsg = document.getElementById("edit_response");
+    errMsg.style.opacity = "0";
+    errMsg.style.visibility = "hidden";
+    setTimeout(function(){ errMsg.style.marginTop = "-50px"; }, 1050);
 }
 
 function listEntryHtml(listentry_id, listentry_title){

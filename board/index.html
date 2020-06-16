@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="../styles/style.css">
         <link rel="stylesheet" href="../styles/board.css">
         <link rel="stylesheet" href="../styles/draggable-listentry.css">
+        <link rel="stylesheet" href="../styles/modal.css">
         <script src="../scripts/constants.js"></script>
     </head>
     <body>
@@ -17,7 +18,7 @@
                 <div id="home" class="menu_items" onclick="showDashboard()">
                     Boards
                 </div>
-                <div id="board_menu" class="menu_items menu_items-right">
+                <div id="board_menu" class="menu_items menu_items-right" onclick="manageBoard(this);">
                     <p>...</p>
                 </div>
             </div>
@@ -26,8 +27,22 @@
             <div id="board_content">
             </div>
         </div>
+        <div id="manage_board_modal" class="modal">
+            <div class="modal-content">
+                <span class="close_modal">&times;</span>
+                <div id="edit_response" class="error-msg">
+                </div>
+                <p><b>Manage Board</b></p>
+                <input type="text" class="manage_board_input" id="manage_board_title" placeholder="Board-Titel">
+                <button id="change_title_submit" class="manage_board_submit" onclick="changeBoardTitle()">Titel ändern</button>
+                <p>Manage Access</p>
+                <input type="text" class="manage_board_input" id="add_shared_user" placeholder="Mail des Nutzers zur Freigabe">
+                <button id="add_user_submit" class="manage_board_submit" onclick="addSharedUser()">
+            </div>
+        </div>
     <script src="../scripts/functions.js"></script>
     <script src="../scripts/draggable-listentry.js"></script>
     <script src="../scripts/board.js"></script>
+    <script src="../scripts/modal.js"></script>
     </body>
 </html>
