@@ -18,8 +18,13 @@
                 <div id="home" class="menu_items" onclick="showDashboard()">
                     Boards
                 </div>
-                <div id="board_menu" class="menu_items menu_items-right" onclick="manageBoard(this);">
-                    <p>...</p>
+                <div class="menu_items-right">
+                <div id="delete_drop" class="menu_items" ondragover="testenIs(event)" ondrop="deleteListentry(event)">
+                        &#xA;&#x1F5D1;
+                    </div>
+                    <div id="board_menu" class="menu_items" onclick="manageBoard(this);">
+                        <p>...</p>
+                    </div>
                 </div>
             </div>
             <div id="board-title">
@@ -34,10 +39,10 @@
                 </div>
                 <p><b>Manage Board</b></p>
                 <input type="text" class="manage_board_input" id="manage_board_title" placeholder="Board-Titel">
-                <button id="change_title_submit" class="manage_board_submit" onclick="changeBoardTitle()">Titel ändern</button>
+                <div id="change_title_submit" class="manage_board_submit" onclick="changeBoardTitle()">Titel ändern</div>
                 <p>Manage Access</p>
                 <input type="text" class="manage_board_input" id="add_shared_user" placeholder="Mail des Nutzers zur Freigabe">
-                <button id="add_user_submit" class="manage_board_submit" onclick="addSharedUser()">
+                <div id="add_user_submit" class="manage_board_submit" onclick="addSharedUser()">Nutzer freigeben</div>
             </div>
         </div>
     <script src="../scripts/functions.js"></script>

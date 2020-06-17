@@ -187,7 +187,7 @@ function cat_titles(category, firstTitle, category_id) {
 }
 
 function makeBoardHtml(id, title) {
-    return `<div id="board_${id}" class="boards" onclick="openBoard(this)">${title}</div>`;
+    return `<div id="board_${id}" class="boards" onclick="openBoard(this)"><div style="text-overflow: ellipsis; overflow: hidden">${title}</div></div>`;
 }
 
 function makeBoardsHtml(catTitles) {

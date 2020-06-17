@@ -32,6 +32,8 @@ function allowDrop(event){
     } else if (tarCL.contains("list-element")) {
         var shadow = setShadow();
         tar.getElementsByClassName("list-content")[0].appendChild(shadow);
+    } else if (tar.id == "delete_drop") {
+        // console.log("deleteDragOver");
     } else {
         //console.log(tar);
     }

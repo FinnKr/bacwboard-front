@@ -171,14 +171,21 @@ function changeBoardTitleRequest(newTitle){
     req.onreadystatechange = function(){
         if (this.readyState == 4){
             if (this.status == 200){
-
+                console.log("changed");
+                getLists();
             } else if (this.status == 401){
                 window.location = UNAUTHORIZED_URL;
             } else if (this.status == 304){
                 // not modified
+                showErrMsg(JSON.parse(this.responseText).message);
+                setTimeout(hideErrMsg, 3000);
             } else if (this.status == 404){
                 // not found
+                showErrMsg(JSON.parse(this.responseText).message);
+                setTimeout(hideErrMsg, 3000);
             } else {
+                showErrMsg(JSON.parse(this.responseText).message);
+                setTimeout(hideErrMsg, 3000);
                 console.log(this.status);
                 console.log(this.responseText);
             }
@@ -200,14 +207,20 @@ function addSharedUserRequest(sharedMail){
     req.onreadystatechange = function (){
         if (this.readyState == 4){
             if (this.status == 201){
-
+                // shared
+                showSuccessMsg("Shared");
+                setTimeout(hideSuccessMsg, 1500);
             } else if (this.status == 401){
                 window.location = UNAUTHORIZED_URL;
             } else if (this.status == 404){
-                // not found
+                showErrMsg(JSON.parse(this.responseText).message);
+                setTimeout(hideErrMsg, 3000);
             } else if (this.status == 422){
-                // duplicate
+                showErrMsg(JSON.parse(this.responseText).message);
+                setTimeout(hideErrMsg, 3000);
             } else {
+                showErrMsg(JSON.parse(this.responseText).message);
+                setTimeout(hideErrMsg, 3000);
                 console.log(this.status);
                 console.log(this.responseText);    
             }
@@ -218,6 +231,58 @@ function addSharedUserRequest(sharedMail){
         "board_id": getParams(window.location.href).board_id
     });
     req.send(sharedUser);
+}
+
+function changeListTitleRequest(listid, title, oldContent){
+    var reqUrl = url + "/list/" + listid;
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("PUT", reqUrl, true);
+    req.setRequestHeader("Content-type", "application/json");
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function () {
+        if (this.readyState == 4){
+            if (this.status == 200){
+                getLists();
+            } else if (this.status == 401){
+                window.location = UNAUTHORIZED_URL;
+            } else if (this.status == 404){
+                // not found
+                console.log("not found");
+            } else {
+                console.log(this.status);
+                console.log(this.responseText);
+            }
+        }
+    }
+    const newTitle = JSON.stringify({
+        "title": title
+    });
+    req.send(newTitle);
+}
+
+function deleteListentryRequest(listentryid) {
+    var reqUrl = url + "/list/entry/" + listentryid;
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("DELETE", reqUrl, true);
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function () {
+        if (this.readyState == 4){
+            if (this.status == 200) {
+                getListentries();
+            } else if (this.status == 401){
+                window.location = UNAUTHORIZED_URL;
+            } else if (this.status == 404){
+                console.log("not found");
+            } else {
+                console.log(req.status);
+                console.log(req.responseText);
+            }
+        }
+    }
+    req.send();
+    
 }
 
 function createList(board_id, elem) {
@@ -238,7 +303,7 @@ function createList(board_id, elem) {
     inputField.focus();
     window.onclick = function() {
         if(!(doms.includes(this.event.target))){
-            container.innerHTML = elem.outerHTML;            
+            container.innerHTML = elem.outerHTML;
         }
     }
 }
@@ -293,7 +358,7 @@ function manageBoard(el){
     var oldTitle = document.getElementById("board-title").innerText;
     boardTitleInput.value = oldTitle;
     boardTitleInput.addEventListener("keyup", () => {
-        if (!boardTitleInput.value.trim() || boardTitleInput.value == oldTitle) {
+        if (!boardTitleInput.value.trim() || boardTitleInput.value == document.getElementById("board-title").innerText) {
             boardTitleSubmit.classList.remove("manage_board_submit_active");
             boardTitleSubmit.classList.add("manage_board_submit");
         } else {
@@ -303,6 +368,7 @@ function manageBoard(el){
     });
     var accessUserInput = document.getElementById("add_shared_user");
     var accessUserSubmit = document.getElementById("add_user_submit");
+    accessUserInput.value = "";
     accessUserInput.addEventListener("keyup", () => {
         if (!accessUserInput.value.trim()) {
             accessUserSubmit.classList.remove("manage_board_submit_active");
@@ -336,6 +402,37 @@ function addSharedUser(){
     }
 }
 
+function changeListTitle(listid, el){
+    var oldTitle = el.firstChild.innerText;
+    var tempInput = document.createElement("input");
+    tempInput.id = `change-list-${listid}`;
+    tempInput.placeholder = "Titel";
+    tempInput.value = oldTitle;
+    el.onclick = () => {return};
+    tempInput. addEventListener("keyup", event => {
+        if (event.keyCode === 13){
+            event.preventDefault();
+            if (tempInput.value.trim() && tempInput.value.trim() != oldTitle) {
+                changeListTitleRequest(listid, tempInput.value, el.firstChild);
+            } else {
+                getLists();
+            }
+        }
+    });
+    el.firstChild.replaceWith(tempInput);
+    tempInput.focus();
+}
+
+function deleteListentry(event){
+    event.preventDefault();
+    deleteListentryRequest(event.dataTransfer.getData("text").substring(18));
+}
+
+function testenIs(event){
+    event.preventDefault();
+    return false;
+}
+
 function showErrMsg(message) {
     var errMsg = document.getElementById("edit_response");
     errMsg.innerHTML = message;
@@ -350,6 +447,28 @@ function hideErrMsg() {
     errMsg.style.opacity = "0";
     errMsg.style.visibility = "hidden";
     setTimeout(function(){ errMsg.style.marginTop = "-50px"; }, 1050);
+}
+
+function showSuccessMsg(message) {
+    var errMsg = document.getElementById("edit_response");
+    errMsg.innerHTML = message;
+    errMsg.style.marginTop = "0";
+    errMsg.style.visibility = "visible";
+    errMsg.style.opacity = "1";
+    errMsg.style.width = "80%";
+    errMsg.style.backgroundColor = "green";
+    errMsg.style.border = "1px solid green";
+}
+
+function hideSuccessMsg() {
+    var errMsg = document.getElementById("edit_response");
+    errMsg.style.opacity = "0";
+    errMsg.style.visibility = "hidden";
+    setTimeout(function(){ 
+        errMsg.style.marginTop = "-50px";
+        errMsg.style.backgroundColor = "rgb(235, 90, 70)";
+        errMsg.style.border = "1px solid #EB5A46";
+    }, 1050);
 }
 
 function listEntryHtml(listentry_id, listentry_title){
@@ -377,7 +496,7 @@ function createListBtnHtml(board_id){
 }
 
 function createListHtml(list_id, list_title){
-    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element"><div id="list-title-${list_id}" class="list-title"><b>${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
+    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element"><div id="list-title-${list_id}" class="list-title" onclick="changeListTitle(${list_id}, this)"><b>${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
 }
 
 function createListInputHtml(board_id){

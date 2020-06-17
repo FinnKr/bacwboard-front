@@ -22,7 +22,15 @@ body {
 }
 
 #board_menu p {
-    margin-top: -14px;
+    margin-top: -10px;
+}
+
+#delete_drop {
+    background-color: rgba(235, 90, 70, 0.8);
+}
+
+#delete_drop:hover {
+    background-color: rgba(235, 90, 70, 0.6);
 }
 
 .menu_items {
@@ -183,6 +191,7 @@ body {
     padding: 4px;
     border-radius: 3px;
     box-shadow: 0 1px 0 rgba(9,30,66,.25);
+    overflow-wrap: break-word;
 }
 
 .listentry-wrapper {
