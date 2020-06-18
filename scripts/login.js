@@ -17,15 +17,22 @@ function login(){
     req.setRequestHeader("Content-type", "application/json");
     req.onreadystatechange = function() {
         if (this.readyState == 4){
-            if (this.status == 200) {                
-                var jsonResponse = JSON.parse(req.responseText);
-                var expireDate = getExpireDate();
-                document.cookie = "token=" + jsonResponse.token + "; expires=" + expireDate + ";path=/;sameSite=strict";
-                window.location = DASHBOARD_URL;
-            } else if (this.status == 401) {
-                showErrMsg("Nutzername oder Passwort falsch");
-                setTimeout(hideErrMsg, 5000);
-                loginBtn.style.backgroundColor = "#5aac44";
+            switch (this.status) {
+                case 200:
+                    var jsonResponse = JSON.parse(req.responseText);
+                    var expireDate = getExpireDate();
+                    document.cookie = "token=" + jsonResponse.token + "; expires=" + expireDate + ";path=/;sameSite=strict";
+                    window.location = DASHBOARD_URL;
+                    break;
+                case 401:
+                    showErrMsg("Nutzername oder Passwort falsch");
+                    setTimeout(hideErrMsg, 5000);
+                    loginBtn.style.backgroundColor = "#5aac44";
+                    break;
+                default:
+                    console.log(this.status);
+                    console.log(this.responseText);
+                    break;
             }
         }
     }

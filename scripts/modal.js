@@ -1,7 +1,7 @@
 function showModal(modalname){
     var modal = document.getElementById(modalname);
     modal.style.display = "block";
-    document.getElementsByClassName("close_modal")[0].onclick = function() {
+    document.getElementsByClassName(modalname + "-close")[0].onclick = function() {
         hideModal(modalname);
     }
     window.onclick = function() {

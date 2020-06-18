@@ -1,6 +1,7 @@
 getLists();
 
 function getLists(){
+    window.removeEventListener("click", closeListEditEvent);
     var content = document.getElementById("board_content");
     content.innerHTML = LOADER_HTML;
     var reqUrl = url + "/list/" + getParams(window.location.href).board_id;
@@ -10,17 +11,22 @@ function getLists(){
     req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function() {
         if (this.readyState == 4) {
-            if (this.status == 200) {
-                var jsonResponse = JSON.parse(req.responseText);                
-                content.innerHTML = parseListsToHtml(jsonResponse);
-                getListentries();
-            } else if (this.status == 401) {
-                window.location = UNAUTHORIZED_URL;
-            } else if (this.status == 404) {
-                content.innerHTML = "<h1>Dieses Board existiert nicht</h1>";
-            } else {
-                console.log(this.status);
-                console.log(this.responseText);
+            switch (this.status) {
+                case 200:
+                    var jsonResponse = JSON.parse(req.responseText);                
+                    content.innerHTML = parseListsToHtml(jsonResponse);
+                    getListentries();
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                case 404:
+                    content.innerHTML = "<h1>Dieses Board existiert nicht</h1>";
+                    break;
+                default:
+                    console.log(this.status);
+                    console.log(this.responseText);
+                    break;
             }
         }
     }
@@ -37,20 +43,23 @@ function createListRequest(board_id){
     req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function() {
         if (this.readyState == 4){
-            if (this.status == 201) {
-                // created
-                getLists();
-            } else if (this.status == 401) {
-                window.location = UNAUTHORIZED_URL;
-            } else if (this.status == 404) {
-                // not found
-                console.log("not found");
-            } else if (this.status == 422) {
-                // duplicate
-                console.log("duplicate");
-            } else {
-                console.log(this.status);
-                console.log(this.responseText);
+            switch (this.status) {
+                case 201:
+                    getLists();
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                case 404:
+                    console.log("Not found");
+                    break;
+                case 422:
+                    console.log("Duplicate");
+                    break;
+                default:
+                    console.log(this.status);
+                    console.log(this.responseText);
+                    break;
             }
         }
     }
@@ -72,23 +81,23 @@ function createListentryRequest(list_id) {
         req.setRequestHeader("Authorization", getCookieByName("token"));
         req.onreadystatechange = function() {
             if (this.readyState == 4){
-                if (this.status == 201) {
-                    // created
-                    getListentries();
-                    var curInput = document.getElementById(`add-list-entry-input-${list_id}`);
-                    curInput.value = "";
-                    curInput.focus();
-                } else if (this.status == 401) {
-                    window.location = UNAUTHORIZED_URL;
-                } else if (this.status == 404) {
-                    // not found
-                    console.log("not found");
-                } else if (this.status == 422) {
-                    // duplicate
-                    console.log("duplicate");
-                } else {
-                    console.log(this.status);
-                    console.log(this.responseText);
+                switch (this.status) {
+                    case 201:
+                        getListentries();
+                        var curInput = document.getElementById(`add-list-entry-input-${list_id}`);
+                        curInput.value = "";
+                        curInput.focus();
+                        break;
+                    case 401:
+                        window.location = UNAUTHORIZED_URL;
+                        break;
+                    case 404:
+                        console.log("Not found");
+                        break;
+                    default:
+                        console.log(this.status);
+                        console.log(this.responseText);
+                        break;
                 }
             }
         }
@@ -112,17 +121,22 @@ function getListentries(){
         req.open("GET", reqUrl, true);
         req.setRequestHeader("Authorization", getCookieByName("token"));
         req.onreadystatechange = function() {
-            if (this.readyState == 4) {
-                if (this.status == 200) {
-                    var jsonResponse = JSON.parse(req.responseText);                
-                    parseListentriesToHtml(jsonResponse);
-                } else if (this.status == 401) {
-                    window.location = UNAUTHORIZED_URL;
-                } else if (this.status == 404) {
-                    content.innerHTML = "<h1>Dieses Board existiert nicht</h1>";
-                } else {
-                    console.log(this.status);
-                    console.log(this.responseText);
+            if (this.readyState == 4){
+                switch (this.status) {
+                    case 200:
+                        var jsonResponse = JSON.parse(req.responseText);                
+                        parseListentriesToHtml(jsonResponse);
+                        break;
+                    case 401:
+                        window.location = UNAUTHORIZED_URL;
+                        break;
+                    case 404:
+                        content.innerHTML = "<h1>Dieses Board existiert nicht</h1>";
+                        break;
+                    default:
+                        console.log(this.status);
+                        console.log(this.responseText);
+                        break;
                 }
             }
         }
@@ -139,17 +153,23 @@ function moveListentryRequest(listEntryId, upperListEntryId, listId){
     req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function() {
         if (this.readyState == 4){
-            if (this.status == 200){
-                getListentries();
-            } else if (this.status == 401) {
-                window.location = UNAUTHORIZED_URL;
-            } else if (this.status == 304) {
-                console.log("Not modified");                
-            } else if (this.status == 404) {
-                console.log("Moved listentry not found");
-            } else {
-                console.log(this.status);
-                console.log(this.responseText);
+            switch (this.status) {
+                case 200:
+                    getListentries();
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                case 304:
+                    console.log("Not modified");
+                    break;
+                case 404:
+                    console.log("Not found");
+                    break;
+                default:
+                    console.log(this.status);
+                    console.log(this.responseText);
+                    break;
             }
         }
     }
@@ -170,24 +190,17 @@ function changeBoardTitleRequest(newTitle){
     req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function(){
         if (this.readyState == 4){
-            if (this.status == 200){
-                console.log("changed");
-                getLists();
-            } else if (this.status == 401){
-                window.location = UNAUTHORIZED_URL;
-            } else if (this.status == 304){
-                // not modified
-                showErrMsg(JSON.parse(this.responseText).message);
-                setTimeout(hideErrMsg, 3000);
-            } else if (this.status == 404){
-                // not found
-                showErrMsg(JSON.parse(this.responseText).message);
-                setTimeout(hideErrMsg, 3000);
-            } else {
-                showErrMsg(JSON.parse(this.responseText).message);
-                setTimeout(hideErrMsg, 3000);
-                console.log(this.status);
-                console.log(this.responseText);
+            switch (this.status) {
+                case 200:
+                    getLists();
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                default:
+                    showErrMsg(JSON.parse(this.responseText).message);
+                    setTimeout(hideErrMsg, 3000);
+                    break;
             }
         }
     }
@@ -206,23 +219,18 @@ function addSharedUserRequest(sharedMail){
     req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function (){
         if (this.readyState == 4){
-            if (this.status == 201){
-                // shared
-                showSuccessMsg("Shared");
-                setTimeout(hideSuccessMsg, 1500);
-            } else if (this.status == 401){
-                window.location = UNAUTHORIZED_URL;
-            } else if (this.status == 404){
-                showErrMsg(JSON.parse(this.responseText).message);
-                setTimeout(hideErrMsg, 3000);
-            } else if (this.status == 422){
-                showErrMsg(JSON.parse(this.responseText).message);
-                setTimeout(hideErrMsg, 3000);
-            } else {
-                showErrMsg(JSON.parse(this.responseText).message);
-                setTimeout(hideErrMsg, 3000);
-                console.log(this.status);
-                console.log(this.responseText);    
+            switch (this.status) {
+                case 201:
+                    showSuccessMsg("Shared");
+                    setTimeout(hideSuccessMsg, 1500);
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                default:
+                    showErrMsg(JSON.parse(this.responseText).message);
+                    setTimeout(hideErrMsg, 3000);
+                    break;
             }
         }
     }
@@ -242,16 +250,20 @@ function changeListTitleRequest(listid, title, oldContent){
     req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function () {
         if (this.readyState == 4){
-            if (this.status == 200){
-                getLists();
-            } else if (this.status == 401){
-                window.location = UNAUTHORIZED_URL;
-            } else if (this.status == 404){
-                // not found
-                console.log("not found");
-            } else {
-                console.log(this.status);
-                console.log(this.responseText);
+            switch (this.status) {
+                case 200:
+                    getLists();
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                case 404:
+                    // not found
+                    break;
+                default:
+                    console.log(req.status);
+                    console.log(req.responseText);
+                    break;
             }
         }
     }
@@ -269,20 +281,82 @@ function deleteListentryRequest(listentryid) {
     req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function () {
         if (this.readyState == 4){
-            if (this.status == 200) {
-                getListentries();
-            } else if (this.status == 401){
-                window.location = UNAUTHORIZED_URL;
-            } else if (this.status == 404){
-                console.log("not found");
-            } else {
-                console.log(req.status);
-                console.log(req.responseText);
+            switch (this.status) {
+                case 200:
+                    getListentries();
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                case 404:
+                    // not found
+                    break;
+                default:
+                    console.log(req.status);
+                    console.log(req.responseText);
+                    break;
             }
         }
     }
     req.send();
     
+}
+
+function deleteBoardRequest(){
+    document.body.classList.add("waiting");
+    var reqUrl = url + "/board/" + getParams(window.location.href).board_id;
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("DELETE", reqUrl, true);
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function () {
+        if (this.readyState == 4){
+            switch (this.status) {
+                case 200:
+                    showDashboard();
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                case 404:
+                    console.log("not found")
+                    break;
+                default:
+                    console.log(this.status);
+                    console.log(req.responseText);                    
+            }
+        }
+    }
+    req.send();
+}
+
+function deleteListRequest(listid) {
+    document.body.classList.add("waiting");
+    var reqUrl = url + "/list/" + listid;
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("DELETE", reqUrl, true);
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function () {
+        if (this.readyState == 4){
+            switch (this.status) {
+                case 200:
+                    getLists();
+                    document.body.classList.remove("waiting");
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                case 404:
+                    console.log("not found")
+                    break;
+                default:
+                    console.log(this.status);
+                    console.log(req.responseText);                    
+            }
+        }
+    }
+    req.send();
 }
 
 function createList(board_id, elem) {
@@ -402,13 +476,15 @@ function addSharedUser(){
     }
 }
 
-function changeListTitle(listid, el){
+function changeListTitle(listid, ele){
+    el = ele.parentElement;
     var oldTitle = el.firstChild.innerText;
     var tempInput = document.createElement("input");
     tempInput.id = `change-list-${listid}`;
     tempInput.placeholder = "Titel";
     tempInput.value = oldTitle;
-    el.onclick = () => {return};
+    tempInput.classList.add("change-list-title-input");
+    // el.onclick = () => {return};
     tempInput. addEventListener("keyup", event => {
         if (event.keyCode === 13){
             event.preventDefault();
@@ -419,8 +495,35 @@ function changeListTitle(listid, el){
             }
         }
     });
-    el.firstChild.replaceWith(tempInput);
+    var deleteList = document.createElement("div");
+    deleteList.id = `delete-list-${listid}`;
+    deleteList.innerHTML = "&#xA;&#x1F5D1;";
+    deleteList.onclick = () => {deleteListRequest(listid);};
+    deleteList.classList.add("delete-list-btn");
+    var changeTitleForm = document.createElement("div");
+    changeTitleForm.id = `change-list-title-form-${listid}`;
+    changeTitleForm.classList.add("change-list-form");
+    changeTitleForm.setAttribute("oldTitle", oldTitle);
+    changeTitleForm.appendChild(tempInput);
+    changeTitleForm.appendChild(deleteList);
+    el.firstChild.replaceWith(changeTitleForm);
+    window.addEventListener("click", closeListEditEvent);
     tempInput.focus();
+}
+
+function closeListEditEvent(event){
+    var tarCL = event.target.classList;
+    if (!tarCL.contains("delete-list-btn") && !tarCL.contains("change-list-title-input") && !tarCL.contains("list-title") && !tarCL.contains("title-std")){
+        document.querySelectorAll(".change-list-form").forEach(elem => {
+            const oldTitle = elem.getAttribute("oldTitle");
+            console.log(elem.id.substring(23));
+            
+            elem.innerHTML = `<b class="title-std" onclick="changeListTitle(${elem.id.substring(23)}, this)">${oldTitle}</b>`;
+            // elem.setAttribute("onclick", "changeListTitle(1,this)");
+            //elem.onclick = () => {changeListTitle(elem.id.substring(11), elem);};
+            window.removeEventListener("click", closeListEditEvent);
+        });
+    }
 }
 
 function deleteListentry(event){
@@ -496,7 +599,7 @@ function createListBtnHtml(board_id){
 }
 
 function createListHtml(list_id, list_title){
-    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element"><div id="list-title-${list_id}" class="list-title" onclick="changeListTitle(${list_id}, this)"><b>${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
+    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element"><div id="list-title-${list_id}" class="list-title"><b onclick="changeListTitle(${list_id}, this)" class="title-std">${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
 }
 
 function createListInputHtml(board_id){

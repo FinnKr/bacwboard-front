@@ -19,11 +19,14 @@
                     Boards
                 </div>
                 <div class="menu_items-right">
-                <div id="delete_drop" class="menu_items" ondragover="testenIs(event)" ondrop="deleteListentry(event)">
+                    <div id="delete_drop" class="menu_items" ondragover="testenIs(event)" ondrop="deleteListentry(event)" onclick='showModal("delete_board_modal")'>
                         &#xA;&#x1F5D1;
                     </div>
-                    <div id="board_menu" class="menu_items" onclick="manageBoard(this);">
+                    <div id="board_menu" class="menu_items" onclick="manageBoard(this)">
                         <p>...</p>
+                    </div>
+                    <div id="logout-btn" class="menu_items" style="margin-left: -3px;" onclick="logout()">
+                        Logout
                     </div>
                 </div>
             </div>
@@ -34,7 +37,7 @@
         </div>
         <div id="manage_board_modal" class="modal">
             <div class="modal-content">
-                <span class="close_modal">&times;</span>
+                <span class="manage_board_modal-close close_modal">&times;</span>
                 <div id="edit_response" class="error-msg">
                 </div>
                 <p><b>Manage Board</b></p>
@@ -43,6 +46,18 @@
                 <p>Manage Access</p>
                 <input type="text" class="manage_board_input" id="add_shared_user" placeholder="Mail des Nutzers zur Freigabe">
                 <div id="add_user_submit" class="manage_board_submit" onclick="addSharedUser()">Nutzer freigeben</div>
+            </div>
+        </div>
+        <div id="delete_board_modal" class="modal">
+            <div class="modal-content">
+                <span class="delete_board_modal-close close_modal">&times;</span>
+                <div id="delete_response" class="error-msg">
+                </div>
+                <p><b>Board löschen</b></p>
+                <p>Möchten Sie das Board wirklich endgültig mit all seinen Inhalten löschen?</p>
+                <div id="delete-Board-Btn" class="delete_board_submit" onclick="deleteBoardRequest()">
+                    Endgültig löschen
+                </div>
             </div>
         </div>
     <script src="../scripts/functions.js"></script>

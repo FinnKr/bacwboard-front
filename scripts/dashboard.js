@@ -15,14 +15,18 @@ function getOwnBoards(){
     req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function () {
         if (this.readyState == 4) {
-            if (this.status == 200) {
-                var jsonResponse = JSON.parse(req.responseText);
-                content.innerHTML = parseBoardsToHtml(jsonResponse, "own");
-            } else if (this.status == 401) {
-                window.location = UNAUTHORIZED_URL;
-            } else {
-                console.log(this.status);
-                console.log(this.responseText);
+            switch (this.status) {
+                case 200:
+                    var jsonResponse = JSON.parse(req.responseText);
+                    content.innerHTML = parseBoardsToHtml(jsonResponse, "own");
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                default:
+                    console.log(this.status);
+                    console.log(this.responseText);
+                    break;
             }
         }
     }
@@ -39,14 +43,18 @@ function getSharedBoards(){
     req.setRequestHeader("Authorization", getCookieByName("token"));
     req.onreadystatechange = function () {
         if (this.readyState == 4) {
-            if (this.status == 200) {
-                var jsonResponse = JSON.parse(req.responseText);
-                content.innerHTML = parseBoardsToHtml(jsonResponse, "shared");
-            } else if (this.status == 401) {
-                window.location = UNAUTHORIZED_URL;
-            } else {
-                console.log(this.status);
-                console.log(this.responseText);
+            switch (this.status) {
+                case 200:
+                    var jsonResponse = JSON.parse(req.responseText);
+                    content.innerHTML = parseBoardsToHtml(jsonResponse, "shared");
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                default:
+                    console.log(this.status);
+                    console.log(this.responseText);
+                    break;
             }
         }
     }
@@ -103,15 +111,22 @@ function createBoardRequest() {
         req.setRequestHeader("Authorization", getCookieByName("token"));
         req.onreadystatechange = function () {
             if (this.readyState == 4) {
-                if (this.status == 201) {
-                    window.location = DASHBOARD_URL;
-                } else if (this.status == 401) {
-                    window.location = UNAUTHORIZED_URL;
-                } else if (this.status == 422) {
-                    showErrMsg("Ein Board mit diesem Titel existiert bereits");
-                    setTimeout(hideErrMsg, 5000);
-                } else {
-                    console.log(this.status + "\n" + this.responseText);
+                switch (this.status) {
+                    case 201:
+                        hideModal("create_board_modal");
+                        getBoards();
+                        break;
+                    case 401:
+                        window.location = UNAUTHORIZED_URL;
+                        break;
+                    case 422:
+                        showErrMsg("Ein Board mit diesem Titel existiert bereits");
+                        setTimeout(hideErrMsg, 5000);
+                        break;
+                    default:
+                        console.log(this.status);
+                        console.log(this.responseText);
+                        break;
                 }
             }
         }

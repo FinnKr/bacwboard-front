@@ -37,3 +37,12 @@ function getParams(url_string){
     }
     return params;
 };
+
+/**
+ * Deletes all cookies and returns the user to the login page
+ * 
+*/
+function logout(){
+    document.cookie = "";
+    window.location = LOGIN_URL;
+}

@@ -22,6 +22,9 @@ function allowDrop(event){
     } else if (tarCL.contains("list-title")){
         var shadow = setShadow();
         tar.nextSibling.insertBefore(shadow, tar.nextSibling.firstChild);
+    } else if (tarCL.contains("title-std")){
+        var shadow = setShadow();
+        tar.parentElement.nextSibling.insertBefore(shadow, tar.parentElement.nextSibling.firstChild);
     } else if (tar.id == "create-listentry"){
         var shadow = setShadow();
         tar.parentNode.getElementsByClassName("list-content")[0].appendChild(shadow);

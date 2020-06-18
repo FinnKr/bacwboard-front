@@ -11,6 +11,17 @@
         <script src="../scripts/constants.js"></script>
     </head>
     <body>
+    <div id="cotent">
+        <div id="board-header">
+            <div id="home" class="menu_items" onclick="showDashboard()">
+                Boards
+            </div>
+            <div class="menu_items-right">
+                <div id="logout-btn" class="menu_items" onclick="logout()">
+                    Logout
+                </div>
+            </div>
+        </div>
         <div id="dashboard_content">
             <div id="dashboard_boards">
                 <i>Javascript needs to be activated</i>
@@ -18,10 +29,10 @@
             <div id="dashboard_shared_boards">
             </div>
         </div>
-
+    </div>
         <div id="create_board_modal" class="modal">
             <div class="modal-content">
-                <span class="close_modal">&times;</span>
+                <span class="create_board_modal-close close_modal">&times;</span>
                 <div id="create_response" class="error-msg">
                 </div>
                 <p><b>Create Board</b></p>
