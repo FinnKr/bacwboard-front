@@ -96,7 +96,7 @@ body {
 
 .boards {
     display: flex;
-    margin: 20px;
+    margin: 10px;
     margin-top: 0px;
     width: 140px;
     min-width: 140px;
@@ -168,6 +168,7 @@ body {
 #dashboard_content {
     position: absolute;
     top: 30px;
+    margin-left: 8px;
 }
 
 #logout-btn {

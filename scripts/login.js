@@ -7,6 +7,24 @@ document.querySelectorAll(".login_input_field").forEach(elem => {
     });
 });
 
+checkToken();
+
+function checkToken(){
+    const token = getCookieByName("token");
+    if (token){
+        var reqUrl = url + "/user/auth";
+        var req = new XMLHttpRequest();
+        req.open("GET", reqUrl, true);
+        req.setRequestHeader("Authorization", token);
+        req.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                window.location = DASHBOARD_URL;
+            }
+        }
+        req.send();
+    }
+}
+
 function login(){    
     var loginBtn = document.getElementById("login_submit");
     loginBtn.style.backgroundColor = "lightgrey";
