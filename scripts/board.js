@@ -485,7 +485,7 @@ function changeListTitle(listid, ele){
     tempInput.value = oldTitle;
     tempInput.classList.add("change-list-title-input");
     // el.onclick = () => {return};
-    tempInput. addEventListener("keyup", event => {
+    tempInput.addEventListener("keyup", event => {
         if (event.keyCode === 13){
             event.preventDefault();
             if (tempInput.value.trim() && tempInput.value.trim() != oldTitle) {
@@ -536,6 +536,10 @@ function testenIs(event){
     return false;
 }
 
+function openListentry(listentry_id){
+    showModal("edit-listentry-modal");
+}
+
 function showErrMsg(message) {
     var errMsg = document.getElementById("edit_response");
     errMsg.innerHTML = message;
@@ -575,7 +579,7 @@ function hideSuccessMsg() {
 }
 
 function listEntryHtml(listentry_id, listentry_title){
-    return `<div id="listentry-wrapper-${listentry_id}" class="listentry-wrapper" draggable="true" ondragstart="drag(event)"><div id="list-entry-item-${listentry_id}" class="list-entry-item">${listentry_title}</div></div>`;
+    return `<div id="listentry-wrapper-${listentry_id}" class="listentry-wrapper" draggable="true" ondragstart="drag(event)" onclick="openListentry(${listentry_id})"><div id="list-entry-item-${listentry_id}" class="list-entry-item">${listentry_title}</div></div>`;
 }
 
 function createListEntryBtnHtml(list_id) {
