@@ -538,6 +538,9 @@ function testenIs(event){
 
 function openListentry(listentry_id){
     showModal("edit-listentry-modal");
+    var titleInput = document.getElementById("edit-listentry-title-input");
+    titleInput.value = document.getElementById(`list-entry-item-${listentry_id}`).innerHTML;
+    
 }
 
 function showErrMsg(message) {

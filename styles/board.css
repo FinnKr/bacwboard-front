@@ -246,3 +246,24 @@ body.waiting * {
     display: inline-block;
     width: 100%;
 }
+
+#edit-listentry-modal {
+    overflow: hidden;
+}
+
+#edit-listentry-modal .modal-content {
+    margin-top: 80px;
+}
+
+#edit-listentry-title-input {
+    width: 250px;
+}
+
+#edit-listentry-description-input {
+    width: 390px;
+    height: 230px;
+    overflow: auto;
+    resize: none;
+    border-radius: 3px;
+    border: 1px solid #a5adba;
+}
