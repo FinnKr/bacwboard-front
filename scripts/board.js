@@ -391,6 +391,7 @@ function parseListsToHtml(res){
         } else {
             // last element
             document.getElementById("board-title").innerHTML = `${list.board_title}`;
+            document.title = `BACWBoard - ${list.board_title}`;
             content_html = `<div id="lists_${list.board_id}" class="board-lists">` + content_html + createListBtnHtml(list.board_id) + "</div>";
         }
     });
