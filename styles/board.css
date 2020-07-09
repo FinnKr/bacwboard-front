@@ -267,3 +267,25 @@ body.waiting * {
     border-radius: 3px;
     border: 1px solid #a5adba;
 }
+
+.edit-listentry-submit {
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+    color: #fff;
+    border: 0;
+    background-color: #5aac44;
+}
+
+.edit-listentry-submit-inactive {    
+    cursor: not-allowed;
+    padding: 5px;    
+    border-radius: 4px;
+    color: #a5adba;
+    border: 0;
+    background-color: rgba(9, 30, 66, .04);
+}
+
+.edit-listentry-submit:hover {
+    background-color: #61bd4f;
+}

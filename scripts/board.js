@@ -359,6 +359,72 @@ function deleteListRequest(listid) {
     req.send();
 }
 
+function getDescriptionRequest(listentry_id){
+    document.body.classList.add("waiting");
+    var reqUrl = url + "/list/entry/" + listentry_id;
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("GET", reqUrl, true);
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function () {
+        if (this.readyState == 4){
+            switch (this.status){
+                case 200:
+                    var description = JSON.parse(this.responseText).description;
+                    document.getElementById("edit-listentry-description-input").value = description || "";
+                    document.body.classList.remove("waiting");
+                    break;
+                case 404:
+                    window.location = window.location;
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                default:
+                    showErrMsg(JSON.parse(this.responseText).message, "edit-response");
+                    setTimeout(hideErrMsg("edit-response"), 3000);
+                    break;
+            }
+        }
+    }
+    req.send();
+}
+
+function changeListentryRequest(title, description, listentry_id) {
+    document.body.classList.add("waiting");
+    var reqUrl = url + "/list/entry/" + listentry_id;
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("PUT", reqUrl, true);
+    req.setRequestHeader("Content-type", "application/json");
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function () {
+        if (this.readyState == 4){
+            switch (this.status) {
+                case 200:
+                    getLists();
+                    document.body.classList.remove("waiting");
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                case 404:
+                    window.location = window.location;
+                    break;
+                default:
+                    showErrMsg(JSON.parse(this.responseText).message, "edit-response");
+                    setTimeout(hideErrMsg("edit-response"), 3000);
+                    break;
+            }
+        }
+    }
+    const listentry = JSON.stringify({
+        "title": title,
+        "description": description
+    });
+    req.send(listentry);
+}
+
 function createList(board_id, elem) {
     var container = elem.parentElement;
     container.innerHTML = createListInputHtml(board_id);
@@ -391,7 +457,7 @@ function parseListsToHtml(res){
         } else {
             // last element
             document.getElementById("board-title").innerHTML = `${list.board_title}`;
-            document.title = `BACWBoard - ${list.board_title}`;
+            document.title = `BACWBoard - ${document.getElementById("board-title").innerText}`;
             content_html = `<div id="lists_${list.board_id}" class="board-lists">` + content_html + createListBtnHtml(list.board_id) + "</div>";
         }
     });
@@ -539,13 +605,40 @@ function testenIs(event){
 
 function openListentry(listentry_id){
     showModal("edit-listentry-modal");
+    document.getElementById("edit-listentry-description-input").value = "";
+    var submitBtnElem = document.getElementById("edit-listentry-submit");
+    submitBtnElem.setAttribute("listentry-id", listentry_id);
+    var submitBtn = submitBtnElem.classList;
+    submitBtn.remove("edit-listentry-submit");
+    submitBtn.add("edit-listentry-submit-inactive");
     var titleInput = document.getElementById("edit-listentry-title-input");
-    titleInput.value = document.getElementById(`list-entry-item-${listentry_id}`).innerHTML;
-    
+    titleInput.value = document.getElementById(`list-entry-item-${listentry_id}`).innerText;
+    getDescriptionRequest(listentry_id);
+    document.querySelectorAll(".edit-listentry-input").forEach(input => {
+        input.addEventListener("keyup", event => {
+            if (titleInput.value.trim()) {
+                submitBtn.remove("edit-listentry-submit-inactive");
+                submitBtn.add("edit-listentry-submit");
+            } else {
+                submitBtn.remove("edit-listentry-submit");
+                submitBtn.add("edit-listentry-submit-inactive");
+            }
+        });
+    });
 }
 
-function showErrMsg(message) {
-    var errMsg = document.getElementById("edit_response");
+function changeListentry(){
+    var title = document.getElementById("edit-listentry-title-input").value.trim();
+    var description = document.getElementById("edit-listentry-description-input").value.trim();
+    if (title){
+        var listentry_id = document.getElementById("edit-listentry-submit").getAttribute("listentry-id");
+        changeListentryRequest(title, description, listentry_id);
+    }
+}
+
+function showErrMsg(message, errContainerId) {
+    errContainerId = errContainerId || "edit_response";
+    var errMsg = document.getElementById(errContainerId);
     errMsg.innerHTML = message;
     errMsg.style.marginTop = "0";
     errMsg.style.visibility = "visible";
@@ -553,8 +646,9 @@ function showErrMsg(message) {
     errMsg.style.width = "80%";
 }
 
-function hideErrMsg() {
-    var errMsg = document.getElementById("edit_response");
+function hideErrMsg(errContainerId) {
+    errContainerId = errContainerId || "edit_response";
+    var errMsg = document.getElementById(errContainerId);
     errMsg.style.opacity = "0";
     errMsg.style.visibility = "hidden";
     setTimeout(function(){ errMsg.style.marginTop = "-50px"; }, 1050);
