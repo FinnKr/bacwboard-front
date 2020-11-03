@@ -371,7 +371,9 @@ function getDescriptionRequest(listentry_id){
             switch (this.status){
                 case 200:
                     var description = JSON.parse(this.responseText).description;
+                    var due_date = JSON.parse(this.responseText).due_date;
                     document.getElementById("edit-listentry-description-input").value = description || "";
+                    document.getElementById("edit-listentry-date-input").value = due_date.slice(0,10);
                     document.body.classList.remove("waiting");
                     break;
                 case 404:
@@ -390,7 +392,7 @@ function getDescriptionRequest(listentry_id){
     req.send();
 }
 
-function changeListentryRequest(title, description, listentry_id) {
+function changeListentryRequest(title, description, due_date, listentry_id) {
     document.body.classList.add("waiting");
     var reqUrl = url + "/list/entry/" + listentry_id;
     var req = new XMLHttpRequest();
@@ -420,7 +422,8 @@ function changeListentryRequest(title, description, listentry_id) {
     }
     const listentry = JSON.stringify({
         "title": title,
-        "description": description
+        "description": description,
+        "due_date": due_date
     });
     req.send(listentry);
 }
@@ -435,7 +438,7 @@ function createList(board_id, elem) {
     });
     var inputField = document.getElementById("create-list-input");
     inputField.addEventListener("keyup", function(event){
-        if (event.keyCode === 13) {
+        if (event.key == "Enter") {
             event.preventDefault();
             document.getElementById("create-list-submit").click();
         }
@@ -582,9 +585,7 @@ function closeListEditEvent(event){
     var tarCL = event.target.classList;
     if (!tarCL.contains("delete-list-btn") && !tarCL.contains("change-list-title-input") && !tarCL.contains("list-title") && !tarCL.contains("title-std")){
         document.querySelectorAll(".change-list-form").forEach(elem => {
-            const oldTitle = elem.getAttribute("oldTitle");
-            console.log(elem.id.substring(23));
-            
+            const oldTitle = elem.getAttribute("oldTitle");            
             elem.innerHTML = `<b class="title-std" onclick="changeListTitle(${elem.id.substring(23)}, this)">${oldTitle}</b>`;
             // elem.setAttribute("onclick", "changeListTitle(1,this)");
             //elem.onclick = () => {changeListTitle(elem.id.substring(11), elem);};
@@ -604,18 +605,30 @@ function testenIs(event){
 }
 
 function openListentry(listentry_id){
+    var submitBtnElem = document.getElementById("edit-listentry-submit");
+    var submitBtn = submitBtnElem.classList;
+    var titleInput = document.getElementById("edit-listentry-title-input");
+    var dueDate = document.getElementById("edit-listentry-date-input");
+
     showModal("edit-listentry-modal");
     document.getElementById("edit-listentry-description-input").value = "";
-    var submitBtnElem = document.getElementById("edit-listentry-submit");
     submitBtnElem.setAttribute("listentry-id", listentry_id);
-    var submitBtn = submitBtnElem.classList;
     submitBtn.remove("edit-listentry-submit");
     submitBtn.add("edit-listentry-submit-inactive");
-    var titleInput = document.getElementById("edit-listentry-title-input");
     titleInput.value = document.getElementById(`list-entry-item-${listentry_id}`).innerText;
+    
+    dueDate.addEventListener("click", ()=>{
+        if (titleInput.value.trim()) {
+            submitBtn.remove("edit-listentry-submit-inactive");
+            submitBtn.add("edit-listentry-submit");
+        } else {
+            submitBtn.remove("edit-listentry-submit");
+            submitBtn.add("edit-listentry-submit-inactive");
+        }
+    });
     getDescriptionRequest(listentry_id);
     document.querySelectorAll(".edit-listentry-input").forEach(input => {
-        input.addEventListener("keyup", event => {
+        input.addEventListener("keyup", () => {
             if (titleInput.value.trim()) {
                 submitBtn.remove("edit-listentry-submit-inactive");
                 submitBtn.add("edit-listentry-submit");
@@ -630,9 +643,10 @@ function openListentry(listentry_id){
 function changeListentry(){
     var title = document.getElementById("edit-listentry-title-input").value.trim();
     var description = document.getElementById("edit-listentry-description-input").value.trim();
+    var due_date = document.getElementById("edit-listentry-date-input").value;
     if (title){
         var listentry_id = document.getElementById("edit-listentry-submit").getAttribute("listentry-id");
-        changeListentryRequest(title, description, listentry_id);
+        changeListentryRequest(title, description, due_date, listentry_id);
     }
 }
 
