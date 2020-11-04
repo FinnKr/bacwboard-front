@@ -371,9 +371,9 @@ function getDescriptionRequest(listentry_id){
             switch (this.status){
                 case 200:
                     var description = JSON.parse(this.responseText).description;
-                    var due_date = JSON.parse(this.responseText).due_date;
+                    var due_date = JSON.parse(this.responseText).due_date || "";
                     document.getElementById("edit-listentry-description-input").value = description || "";
-                    document.getElementById("edit-listentry-date-input").value = due_date.slice(0,10);
+                    document.getElementById("edit-listentry-date-input").value = due_date.slice(0,10) || "";
                     document.body.classList.remove("waiting");
                     break;
                 case 404:
@@ -483,7 +483,7 @@ function createListEntry(btn_el, list_id){
     wrapper.innerHTML = `<div id="create-listentry-form-${list_id}" class="create-listentry-form">` + listEntryInput(list_id) + `<div id="add-listentry-btns">` + addListEntryBtnHtml(list_id) + hideListentryFormHtml(list_id) + "</div></div>";
     var input_element = document.getElementById(`add-list-entry-input-${list_id}`);
     input_element.addEventListener("keyup", function(event){
-        if (event.keyCode === 13){
+        if (event.key == "Enter"){
             event.preventDefault();
             document.getElementById(`add-list-entry-${list_id}`).click();
         }
@@ -556,7 +556,7 @@ function changeListTitle(listid, ele){
     tempInput.classList.add("change-list-title-input");
     // el.onclick = () => {return};
     tempInput.addEventListener("keyup", event => {
-        if (event.keyCode === 13){
+        if (event.key == "Enter"){
             event.preventDefault();
             if (tempInput.value.trim() && tempInput.value.trim() != oldTitle) {
                 changeListTitleRequest(listid, tempInput.value, el.firstChild);

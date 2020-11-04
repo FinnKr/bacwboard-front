@@ -1,6 +1,6 @@
 document.querySelectorAll(".login_input_field").forEach(elem => {
     elem.addEventListener("keyup", function(event){
-        if (event.keyCode === 13) {
+        if (event.key == "Enter") {
             event.preventDefault();
             document.getElementById("login_submit").click();
         }
