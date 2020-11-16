@@ -4,3 +4,9 @@
     height: 25px;
     margin: 0px 10px;
 }
+
+#dropped-pos-style-list {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    margin: 0px 10px;
+}

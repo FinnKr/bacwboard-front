@@ -715,7 +715,7 @@ function createListBtnHtml(board_id){
 }
 
 function createListHtml(list_id, list_title){
-    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element"><div id="list-title-${list_id}" class="list-title"><b onclick="changeListTitle(${list_id}, this)" class="title-std">${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
+    return `<div id="list-wrapper"><div id="list_${list_id}" class="list-element" draggable="true" ondragstart="drag(event)"><div id="list-title-${list_id}" class="list-title"><b onclick="changeListTitle(${list_id}, this)" class="title-std">${list_title}</b></div><div id="list-content-${list_id}" class="list-content"></div><div id="create-listentry">${createListEntryBtnHtml(list_id)}</div></div></div>`;
 }
 
 function createListInputHtml(board_id){
