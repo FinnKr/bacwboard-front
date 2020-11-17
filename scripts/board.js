@@ -181,6 +181,42 @@ function moveListentryRequest(listEntryId, upperListEntryId, listId){
     req.send(changeInfo);
 }
 
+function moveListRequest(listId, upperListId){
+    var reqUrl = url + "/list/changeorder";
+    var req = new XMLHttpRequest();
+    req.overrideMimeType("application/json");
+    req.open("PUT", reqUrl, true);
+    req.setRequestHeader("Content-type", "application/json");
+    req.setRequestHeader("Authorization", getCookieByName("token"));
+    req.onreadystatechange = function() {
+        if (this.readyState == 4){
+            switch (this.status) {
+                case 200:
+                    getLists();
+                    break;
+                case 401:
+                    window.location = UNAUTHORIZED_URL;
+                    break;
+                case 304:
+                    console.log("Not modified");
+                    break;
+                case 404:
+                    console.log("Not found");
+                    break;
+                default:
+                    console.log(this.status);
+                    console.log(this.responseText);
+                    break;
+            }
+        }
+    }
+    const changeInfo = JSON.stringify({
+        "id": listId,
+        "upperId": upperListId
+    });
+    req.send(changeInfo);
+}
+
 function changeBoardTitleRequest(newTitle){
     var reqUrl = url + "/board/" + getParams(window.location.href).board_id;
     var req = new XMLHttpRequest();
